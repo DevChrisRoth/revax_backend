@@ -10,7 +10,6 @@ const config: MysqlConnectionOptions = {
   database: process.env.DB_DATABASE,
   entities: ['dist/**/*.entity{.ts,.js}'],
   subscribers: ['dist/**/*.subscriber{.ts,.js}'],
-  //synchronize: process.env.NODE_ENV == 'production' ? false : true,
   //logging: process.env.NODE_ENV == 'production' ? true : false,
   //insecureAuth: process.env.NODE_ENV == 'production' ? false : true,
   supportBigNumbers: true,

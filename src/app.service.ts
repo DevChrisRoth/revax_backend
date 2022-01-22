@@ -28,7 +28,7 @@ export class AppService {
         type: UserLoginData.type,
       };
       const usertable_sql = `INSERT INTO userlogin (email, password, type) VALUES ( ?, ?, ?)`;
-      const UserData = await this.dbCon.query(usertable_sql, [
+      await this.dbCon.query(usertable_sql, [
         usertable.email,
         usertable.password,
         usertable.type,

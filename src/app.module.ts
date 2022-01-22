@@ -7,8 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { CompanyService } from './company/company.service';
 import { Jobcard } from './company/Jobcard.entity';
+import { Chatroom } from './message/chatroom.entity';
 import { MessageModule } from './message/message.module';
 import { MessageService } from './message/message.service';
+import { Messages } from './message/messages.entity';
 import config from './ormconfig';
 import { PossibleMatches } from './possible-matches/possible-matches.entity';
 import { PossibleMatchesService } from './possible-matches/possible-matches.service';
@@ -20,7 +22,14 @@ import { UsersModule } from './users/users.module';
     TypeOrmModule.forRoot(config),
     UsersModule,
     AuthModule,
-    TypeOrmModule.forFeature([UserData, UserLogin, Jobcard, PossibleMatches]),
+    TypeOrmModule.forFeature([
+      UserData,
+      UserLogin,
+      Jobcard,
+      PossibleMatches,
+      Messages,
+      Chatroom,
+    ]),
 
     RateLimiterModule,
 
