@@ -45,9 +45,9 @@ export class CompanyService {
     try {
       const Jobcard = this.JobcardRepository.create(JobcardData);
       await this.JobcardRepository.save(Jobcard);
-      return { status: 'Jobcard created' };
+      return { status: 'success' };
     } catch {
-      return { status: 'Jobcard not created' };
+      return { status: 'failed' };
     }
   }
 }

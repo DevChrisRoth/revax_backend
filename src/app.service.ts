@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import * as bycript from 'bcryptjs';
 import { Connection, Repository } from 'typeorm';
@@ -75,12 +75,10 @@ export class AppService {
         userdata.jobcategory,
       ]);
 
-      Logger.log(`User successfully created (Userid: ${userdata.userid_fk})`);
       return { status: 'success' };
     } catch (error) {
-      Logger.error(error);
       return {
-        error: 'Email already exists. Please choose another one.',
+        status: 'failed',
       };
     }
   }
@@ -94,12 +92,10 @@ export class AppService {
       UserData.userdataid = userid;
       await this.UserDataRepo.update({ userdataid: userid }, UserData);
       if (password != null) await this.updatePassword(password, userid);
-      Logger.log(`User's data updated successfully (Userid: ${userid})`);
       return { status: 'success' };
     } catch (error) {
-      Logger.error(`Error while updating Userprofile (Userid: ${userid}).`);
       return {
-        error: `Updating your Userprofile failed. Please try again or contact the Support.`,
+        status: `failed`,
       };
     }
   }
@@ -110,14 +106,10 @@ export class AppService {
         { userid: Number(userid) },
         { password: password },
       );
-      Logger.log(
-        `User's password updated successfully (Userid: ${userid}, password: ${password})`,
-      );
       return { status: 'success' };
     } catch (error) {
-      Logger.error(`Error while updating User's password (Userid: ${userid}).`);
       return {
-        error: `Updating your password failed. Please try again or contact the Support.`,
+        status: `failed`,
       };
     }
   }

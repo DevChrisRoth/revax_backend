@@ -25,7 +25,7 @@ export class PossibleMatchesService {
       //function if company clicked a user
       return await this.executeCompanyAction(_userid, _cardid);
     }
-    return { error: 'Something went wrong' };
+    return { status: 'failed' };
   }
 
   private async executeUserAction(_userid: number, _cardid: number) {
@@ -45,7 +45,7 @@ export class PossibleMatchesService {
         userid_fk: _cardid,
       });
       //>>TODO 🛑 service for chatroom and messages
-      return { message: `It's a match!` };
+      return { status: `success` };
     }
     //get userid of jobcard that was clicked
     const jobcard = await this.JobcardRepository.findOneOrFail({
@@ -57,7 +57,7 @@ export class PossibleMatchesService {
       userid_of_liked_user: jobcard.userid_fk,
       userid_fk: _userid,
     });
-    return { message: `Possible match added` };
+    return { status: `success` };
   }
   private async executeCompanyAction(_userid: number, _cardid: number) {
     //_userid = companyid who send this request
@@ -76,7 +76,7 @@ export class PossibleMatchesService {
         userid_fk: _cardid,
       });
       //>>TODO 🛑 service for chatroom and messages
-      return { message: `It's a match!` };
+      return { status: `success` };
     }
     //get userid of jobcard that was clicked
     const user = await this.UserLoginRepo.findOneOrFail({
@@ -88,6 +88,6 @@ export class PossibleMatchesService {
       userid_of_liked_user: user.userid,
       userid_fk: _userid,
     });
-    return { message: `Possible match added` };
+    return { status: `success` };
   }
 }
