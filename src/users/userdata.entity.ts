@@ -50,8 +50,8 @@ export class UserData {
   @Column({ length: 50 })
   place: string;
 
-  @Column({ length: 100 })
-  jobcategory: string;
+  @Column({ length: 100, nullable: true, default: null })
+  jobcategory?: string;
 
   @Column({ nullable: true, default: null, length: 100 })
   companyname: string;

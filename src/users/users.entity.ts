@@ -21,9 +21,6 @@ export class UserLogin {
   @Column({ default: 0 })
   type: number;
 
-  @Column({ nullable: true, default: '', length: 50 })
-  hash?: string;
-
   @CreateDateColumn({ type: 'timestamp' })
   created_at?: Date;
 

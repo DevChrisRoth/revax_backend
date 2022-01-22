@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import * as bycript from 'bcryptjs';
 import { Connection, Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { CompanyService } from './company/company.service';
 import { Jobcard } from './company/Jobcard.entity';
 import { PossibleMatchesService } from './possible-matches/possible-matches.service';
@@ -23,7 +22,6 @@ export class AppService {
     UserLoginData: UserLogin,
   ): Promise<any> {
     try {
-      const userid_ge = uuidv4();
       const usertable = {
         email: UserLoginData.email,
         password: await bycript.hash(UserLoginData.password, 12),
@@ -55,8 +53,9 @@ export class AppService {
         companyname: _UserData.companyname ? _UserData.companyname : null,
         website: _UserData.website ? _UserData.website : null,
         userid_fk: _UserData.userid_fk[0].userid,
+        jobcategory: _UserData.jobcategory,
       };
-      const userdata_sql = `INSERT INTO userdata (firstname, lastname, birthday, phonenumber, description, image1, image2, image3, image4, image5, plz, place, companyname, website, userid_fk) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const userdata_sql = `INSERT INTO userdata (firstname, lastname, birthday, phonenumber, description, image1, image2, image3, image4, image5, plz, place, companyname, website, userid_fk, jobcategory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       await this.dbCon.query(userdata_sql, [
         userdata.firstname,
         userdata.lastname,
@@ -73,9 +72,10 @@ export class AppService {
         userdata.companyname,
         userdata.website,
         userdata.userid_fk,
+        userdata.jobcategory,
       ]);
 
-      Logger.log(`User successfully created (Userid: ${UserData.userid})`);
+      Logger.log(`User successfully created (Userid: ${userdata.userid_fk})`);
       return { status: 'success' };
     } catch (error) {
       Logger.error(error);
@@ -130,10 +130,15 @@ export class AppService {
     return await this.companyService.createJobcard(jobcard);
   }
 
-  async evalRecommendation(_userid: number, _cardid: number): Promise<any> {
+  async evalRecommendation(
+    _userid: number,
+    _cardid: number,
+    _usertype: number,
+  ): Promise<any> {
     return await this.possibleMatcheService.evalRecommendation(
       _userid,
       _cardid,
+      _usertype,
     );
   }
 }

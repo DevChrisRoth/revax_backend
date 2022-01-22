@@ -10,8 +10,8 @@ export class UsersService {
   ) {}
 
   async findByUsernameAndPassword(email: string): Promise<UserLogin> {
-    return await this.UserLoginRepository.findOne({
-      select: ['type', 'email', 'password', 'hash', 'userid'],
+    return await this.UserLoginRepository.findOneOrFail({
+      select: ['type', 'email', 'password', 'userid'],
       where: {
         email: email,
       },

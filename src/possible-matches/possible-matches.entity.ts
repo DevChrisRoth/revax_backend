@@ -12,7 +12,7 @@ export class PossibleMatches {
   possible_matches_id: number;
 
   @Column()
-  userid: number;
+  userid_fk: number;
 
   @Column()
   userid_of_liked_user: number;

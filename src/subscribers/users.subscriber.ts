@@ -1,3 +1,4 @@
+import * as bycript from 'bcryptjs';
 import { UserLogin } from 'src/users/users.entity';
 import {
   EntitySubscriberInterface,
@@ -5,7 +6,6 @@ import {
   InsertEvent,
   UpdateEvent,
 } from 'typeorm';
-import * as bycript from 'bcryptjs';
 
 @EventSubscriber()
 export class UserSubscriber implements EntitySubscriberInterface<UserLogin> {
@@ -22,7 +22,6 @@ export class UserSubscriber implements EntitySubscriberInterface<UserLogin> {
   async beforeInsert(event: InsertEvent<UserLogin>) {
     const salt = bycript.genSaltSync(12);
     event.entity.password = await bycript.hash(event.entity.password, salt);
-    event.entity.hash = salt;
   }
 
   /**

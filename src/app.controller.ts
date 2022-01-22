@@ -119,8 +119,12 @@ export class AppController {
       return null;
     } else {
       return await this.appService.evalRecommendation(
+        //logged in user
         req.user.userid,
+        // userid of the clicked item
         req.body['cardid'],
+        //usertype of the logged in user
+        req.user.type,
       );
     }
   }
