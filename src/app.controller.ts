@@ -113,7 +113,7 @@ export class AppController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post('recommendation')
+  @Post('recommendation') //✅
   async getRecommendation(@Request() req: any): Promise<any> {
     if (Number(req.body['recommendation']) == 0) {
       return null;
