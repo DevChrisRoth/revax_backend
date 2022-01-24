@@ -1,5 +1,11 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { RateLimit } from 'nestjs-rate-limiter';
+import {
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthenticatedGuard } from './auth/authenticated.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
@@ -10,14 +16,6 @@ import { UserLogin } from './users/users.entity';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @RateLimit({
-    keyPrefix: 'login',
-    points: 100,
-    duration: 60,
-    errorMessage: 'Login cannot be executed more than once in per minute',
-    clearExpiredByTimeout: true,
-    maxQueueSize: 1,
-  })
   @UseGuards(LocalAuthGuard)
   @Post('login') //✅
   async login(@Request() req: any): Promise<any> {
@@ -30,15 +28,6 @@ export class AppController {
     return { loggedin: 'true' };
   }
 
-  @RateLimit({
-    keyPrefix: 'register',
-    points: 2000,
-    duration: 60,
-    errorMessage:
-      'Registration cannot be executed more than once in per minute',
-    clearExpiredByTimeout: true,
-    maxQueueSize: 1,
-  })
   @Post('register') //✅
   async register(@Request() req: any): Promise<any> {
     try {
@@ -129,7 +118,17 @@ export class AppController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Post('recommendation') //✅
+  @Delete('jobcard') //✅
+  async deleteJobCard(@Request() req: any): Promise<any> {
+    try {
+      return await this.appService.deleteJobCard(req.body['jobcardid']);
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('recommendation')
   async getRecommendation(@Request() req: any): Promise<any> {
     try {
       if (Number(req.body['recommendation']) == 0) {
@@ -144,6 +143,53 @@ export class AppController {
           req.user.type,
         );
       }
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('chatrooms')
+  async getChatrooms(@Request() req: any): Promise<any> {
+    try {
+      return await this.appService.getAllChatroomsOfUser(
+        req.user.userid,
+        req.user.type,
+      );
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete('chatrooms') //✅
+  async removeChatrooms(@Request() req: any): Promise<any> {
+    try {
+      return await this.appService.removeChatroom(req.body['chatroomid']);
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('messages') // (get 50 messages of je chatroom)
+  async getMessages(@Request() req: any): Promise<any> {
+    try {
+      return await this.appService.getMessages(req.body['chatroomid']);
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Post('messages') //✅ (get 50 messages of je chatroom)
+  async sendMessage(@Request() req: any): Promise<any> {
+    try {
+      return await this.appService.sendMessage(
+        req.user.userid,
+        req.body['chatroomid'],
+        req.body['message'],
+      );
     } catch (error) {
       return { status: 'failed' };
     }

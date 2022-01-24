@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Jobcard } from 'src/company/Jobcard.entity';
 import { Chatroom } from 'src/message/chatroom.entity';
-import { Messages } from 'src/message/messages.entity';
 import { UserLogin } from 'src/users/users.entity';
 import { Repository } from 'typeorm';
 import { PossibleMatches } from './possible-matches.entity';
@@ -14,7 +13,6 @@ export class PossibleMatchesService {
     @InjectRepository(UserLogin) private UserLoginRepo: Repository<UserLogin>,
     @InjectRepository(PossibleMatches)
     private PossibleMatchesRepo: Repository<PossibleMatches>,
-    @InjectRepository(Messages) private MessagesRepo: Repository<Messages>,
     @InjectRepository(Chatroom) private ChatroomRepo: Repository<Chatroom>,
   ) {}
   async evalRecommendation(
@@ -50,8 +48,8 @@ export class PossibleMatchesService {
       });
       //create new chatroom
       const chatroom = new Chatroom();
-      chatroom.connection_userid_fk = _userid;
-      chatroom.connection_userid_fk_2 = _cardid;
+      chatroom.normal_userid_fk = _userid;
+      chatroom.company_userid_fk = _cardid;
       await this.ChatroomRepo.save(chatroom);
       return { status: `success` };
     }
@@ -85,8 +83,8 @@ export class PossibleMatchesService {
       });
       //create new chatroom
       const chatroom = new Chatroom();
-      chatroom.connection_userid_fk = _userid;
-      chatroom.connection_userid_fk_2 = _cardid;
+      chatroom.company_userid_fk = _userid;
+      chatroom.normal_userid_fk = _cardid;
       await this.ChatroomRepo.save(chatroom);
       return { status: `success` };
     }

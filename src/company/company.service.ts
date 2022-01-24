@@ -20,7 +20,6 @@ export class CompanyService {
     }
     let randomNumber: number =
       jobcardid_array[Math.floor(Math.random() * jobcardid_array.length)];
-    console.log(randomNumber, jobcardid_array);
     const JobcardData = await this.dbCon.query(
       'select jobcardid, description, jobtitle, userid_fk, jobtype, jobcategory from jobcard where jobcardid = ?',
       [randomNumber],
@@ -45,6 +44,15 @@ export class CompanyService {
     try {
       const Jobcard = this.JobcardRepository.create(JobcardData);
       await this.JobcardRepository.save(Jobcard);
+      return { status: 'success' };
+    } catch {
+      return { status: 'failed' };
+    }
+  }
+
+  async deleteJobCard(_jobcardid: number): Promise<any> {
+    try {
+      await this.JobcardRepository.delete(_jobcardid);
       return { status: 'success' };
     } catch {
       return { status: 'failed' };

@@ -11,10 +11,10 @@ export class Chatroom {
   chatroom_id: number;
 
   @Column()
-  connection_userid_fk: number;
+  normal_userid_fk: number;
 
   @Column()
-  connection_userid_fk_2: number;
+  company_userid_fk: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at?: Date;

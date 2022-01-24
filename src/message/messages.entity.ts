@@ -8,7 +8,7 @@ import {
 @Entity('messages')
 export class Messages {
   @PrimaryGeneratedColumn('increment')
-  messages_id: number;
+  message_id: number;
 
   @Column()
   chatroomid_fk: number;

@@ -4,6 +4,8 @@ import * as bycript from 'bcryptjs';
 import { Connection, Repository } from 'typeorm';
 import { CompanyService } from './company/company.service';
 import { Jobcard } from './company/Jobcard.entity';
+import { MessageService } from './message/message.service';
+import { Messages } from './message/messages.entity';
 import { PossibleMatchesService } from './possible-matches/possible-matches.service';
 import { UserData } from './users/UserData.entity';
 import { UserLogin } from './users/users.entity';
@@ -14,6 +16,7 @@ export class AppService {
     @InjectRepository(UserLogin) private UserLoginRepo: Repository<UserLogin>,
     private companyService: CompanyService,
     private possibleMatcheService: PossibleMatchesService,
+    private messageService: MessageService,
     @InjectConnection() private dbCon: Connection,
   ) {}
 
@@ -75,7 +78,7 @@ export class AppService {
         userdata.jobcategory,
       ]);
 
-      return { status: 'success' };
+      return { userid: userdata.userid_fk, type: usertable.type };
     } catch (error) {
       return {
         status: 'failed',
@@ -122,6 +125,10 @@ export class AppService {
     return await this.companyService.createJobcard(jobcard);
   }
 
+  async deleteJobCard(_jobcardid: number): Promise<any> {
+    return await this.companyService.deleteJobCard(_jobcardid);
+  }
+
   async evalRecommendation(
     _userid: number,
     _cardid: number,
@@ -131,6 +138,30 @@ export class AppService {
       _userid,
       _cardid,
       _usertype,
+    );
+  }
+
+  async getAllChatroomsOfUser(_userid: number, _type: number): Promise<any> {
+    return await this.messageService.getAllChatroomsOfUser(_userid, _type);
+  }
+
+  async removeChatroom(_chatroomid: number): Promise<any> {
+    return await this.messageService.removeChatroom(_chatroomid);
+  }
+
+  async getMessages(_chatroomid: number): Promise<Messages[]> {
+    return await this.messageService.getMessages(_chatroomid);
+  }
+
+  async sendMessage(
+    _userid: number,
+    _chartroomid_fk: number,
+    message: string,
+  ): Promise<any> {
+    return await this.messageService.sendMessage(
+      _userid,
+      _chartroomid_fk,
+      message,
     );
   }
 }
