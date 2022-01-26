@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Jobcard } from './Jobcard.entity';
@@ -9,7 +9,43 @@ export class CompanyService {
     @InjectConnection() private dbCon: Connection,
   ) {}
 
-  async getRandomJobcard(_userid: string): Promise<any> {
+  async getRandomJobcard(_userid: number, _type: number): Promise<any> {
+    if (_type == 1) return await this.getRandomUser(_userid);
+    if (_type == 0) return await this.getRandomCard(_userid);
+  }
+
+  private async getRandomUser(_userid: number): Promise<any> {
+    //get jobcategorys of users jobcards
+    //iterate over all users, how has the same jobcategory
+    //save all userids in an array
+    const jobcategorySelect =
+      'SELECT distinct(jobcategory) from jobcard where userid_fk = ?';
+    const jobcardCategorys = await this.dbCon.query(jobcategorySelect, [
+      _userid,
+    ]);
+    const userid_array = [];
+    for (let i = 0; i < jobcardCategorys.length; i++) {
+      const jobcardCategory = jobcardCategorys[i].jobcategory;
+      const useridSelect = `SELECT userid_fk from userdata where jobcategory = ?`;
+      const userids = await this.dbCon.query(useridSelect, [jobcardCategory]);
+      for (let j = 0; j < userids.length; j++) {
+        userid_array.push(userids[j].userid_fk);
+      }
+    }
+    Logger.log(userid_array);
+    //get random userid from userid_array
+    let randomNumber: number =
+      Math.floor(Math.random() * userid_array.length) + 1;
+    const UserData = await this.dbCon.query(
+      `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5, ud.plz, ud.place, ud.website, ul.email, ul.userid from userdata as ud inner join userlogin as ul on ul.userid = ud.userid_fk where ud.userid_fk = ? `,
+      [userid_array[randomNumber]],
+    );
+    Logger.log(randomNumber, UserData[0].userid);
+    if (!UserData) throw new NotFoundException('No Data found');
+    else return { UserData: UserData };
+  }
+
+  private async getRandomCard(_userid: number): Promise<any> {
     const count = await this.JobcardRepository.findAndCount({
       where: { jobcategory: await this.getUsersCategory(_userid) },
     });
@@ -32,7 +68,7 @@ export class CompanyService {
     else return { JobcardData: JobcardData, UserData: UserData };
   }
 
-  private async getUsersCategory(_userid: string): Promise<string> {
+  private async getUsersCategory(_userid: number): Promise<string> {
     const JobcardData = await this.dbCon.query(
       `SELECT jobcategory from userdata where userid_fk = ?`,
       [_userid],

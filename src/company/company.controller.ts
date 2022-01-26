@@ -30,7 +30,10 @@ export class CompanyController {
   @Get('jobcard') //✅
   async getRandomCard(@Request() req: any): Promise<any> {
     try {
-      return await this.companyService.getRandomJobcard(req.user.userid);
+      return await this.companyService.getRandomJobcard(
+        req.user.userid,
+        req.user.type,
+      );
     } catch (error) {
       return { status: 'failed' };
     }
