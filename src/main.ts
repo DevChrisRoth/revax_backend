@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import * as compression from 'compression';
 import * as session from 'express-session';
 import * as helmet from 'helmet';
 import * as passport from 'passport';
@@ -25,6 +26,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.enableCors();
+  app.use(compression());
   //app.use(csurf());
   await app.listen(3000);
   Logger.log(`Application listening at ${await app.getUrl()}`);

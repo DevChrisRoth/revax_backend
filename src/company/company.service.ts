@@ -50,6 +50,16 @@ export class CompanyService {
     }
   }
 
+  async getJobCardList(_userid: number): Promise<any> {
+    try {
+      return await this.JobcardRepository.find({
+        where: { userid_fk: _userid },
+      });
+    } catch {
+      return { status: 'failed' };
+    }
+  }
+
   async deleteJobCard(_jobcardid: number): Promise<any> {
     try {
       await this.JobcardRepository.delete(_jobcardid);

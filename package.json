@@ -29,20 +29,19 @@
     "@nestjs/throttler": "^2.0.0",
     "@nestjs/typeorm": "^8.0.2",
     "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
     "csurf": "^1.11.0",
     "dotenv": "^10.0.0",
     "express-session": "^1.17.2",
     "helmet": "^4.6.0",
     "mysql2": "^2.3.3",
-    "nestjs-rate-limiter": "^3.1.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.2.41",
-    "uuid": "^8.3.2"
+    "typeorm": "^0.2.41"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

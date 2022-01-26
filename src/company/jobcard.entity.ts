@@ -9,7 +9,7 @@ import {
 @Entity('jobcard')
 export class Jobcard {
   @PrimaryGeneratedColumn('increment')
-  jobcardid: number;
+  jobcardid?: number;
 
   @Column()
   userid_fk: number;

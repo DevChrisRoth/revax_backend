@@ -1,19 +1,22 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RateLimiterModule } from 'nestjs-rate-limiter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
+import { CompanyController } from './company/company.controller';
 import { CompanyService } from './company/company.service';
 import { Jobcard } from './company/Jobcard.entity';
 import { Chatroom } from './message/chatroom.entity';
+import { MessageController } from './message/message.controller';
 import { MessageService } from './message/message.service';
 import { Messages } from './message/messages.entity';
 import config from './ormconfig';
+import { PossibleMatchesController } from './possible-matches/possible-matches.controller';
 import { PossibleMatches } from './possible-matches/possible-matches.entity';
 import { PossibleMatchesService } from './possible-matches/possible-matches.service';
 import { UserData } from './users/UserData.entity';
+import { UsersController } from './users/users.controller';
 import { UserLogin } from './users/users.entity';
 import { UsersModule } from './users/users.module';
 @Module({
@@ -29,9 +32,14 @@ import { UsersModule } from './users/users.module';
       Messages,
       Chatroom,
     ]),
-    RateLimiterModule,
   ],
-  controllers: [AppController],
+  controllers: [
+    AppController,
+    UsersController,
+    CompanyController,
+    PossibleMatchesController,
+    MessageController,
+  ],
   providers: [
     AppService,
     AuthService,

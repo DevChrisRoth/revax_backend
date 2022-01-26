@@ -24,7 +24,7 @@ export class MessageService {
       },
     });
     if (countMessages > 0) {
-      return await this.getChatroomsOnly(_userid, _type);
+      return await this.getChatroomsWithLatestMessage(_userid, _type);
     } else {
       //get all chatrooms ordered by last message sent
       return await this.getChatroomsOnly(_userid, _type);
@@ -87,6 +87,102 @@ export class MessageService {
     return chatroomList;
   }
 
+  private async getChatroomsWithLatestMessage(_userid: number, _type: number) {
+    //detect if user == normal user ? company user
+    //get chatrooms where user is participant
+    //get lastest message of messages send to user or from user
+    //get chatrooms from chatroomid_fk = chatroom_id
+    //if user = normal user
+    if (_type === 0) {
+      const particpatedChatrooms = await this.ChatroomRepo.find({
+        select: ['chatroom_id', 'normal_userid_fk', 'company_userid_fk'],
+        where: {
+          normal_userid_fk: _userid,
+        },
+      });
+      //get latest message of chatrooms
+      const chatroomsWithLatestMessage = await Promise.all(
+        particpatedChatrooms.map(async (chatroom) => {
+          const latestMessage = await this.MessagesRepo.findOneOrFail({
+            select: [
+              'message_id',
+              'message',
+              'message_created_at',
+              'chatroomid_fk',
+            ],
+            where: {
+              chatroomid_fk: chatroom.chatroom_id,
+            },
+            order: {
+              message_created_at: 'ASC',
+            },
+          });
+          return {
+            ...chatroom,
+            latestMessage,
+          };
+        }),
+      );
+      //get chatrooms where chatroomid_fk = chatroom_id
+      const chatroomListWithUserData: any = [];
+      await Promise.all(
+        chatroomsWithLatestMessage.map(async (chatroom) => {
+          const chatroomWithUserData = await this.getChatroomsOnly(
+            chatroom.normal_userid_fk,
+            0,
+          );
+          chatroomListWithUserData.push(chatroomWithUserData);
+          return chatroom;
+        }),
+      );
+      return chatroomListWithUserData;
+    } else if (_type === 1) {
+      //user is company
+      const particpatedChatrooms = await this.ChatroomRepo.find({
+        select: ['chatroom_id', 'normal_userid_fk', 'normal_userid_fk'],
+        where: {
+          company_userid_fk: _userid,
+        },
+      });
+      //get latest message of chatrooms
+      const chatroomsWithLatestMessage = await Promise.all(
+        particpatedChatrooms.map(async (chatroom) => {
+          const latestMessage = await this.MessagesRepo.findOneOrFail({
+            select: [
+              'message_id',
+              'message',
+              'message_created_at',
+              'chatroomid_fk',
+            ],
+            where: {
+              chatroomid_fk: chatroom.chatroom_id,
+            },
+            order: {
+              message_created_at: 'ASC',
+            },
+          });
+          return {
+            ...chatroom,
+            latestMessage,
+          };
+        }),
+      );
+      //get chatrooms where chatroomid_fk = chatroom_id
+      const chatroomListWithUserData: any = [];
+      await Promise.all(
+        chatroomsWithLatestMessage.map(async (chatroom) => {
+          const chatroomWithUserData = await this.getChatroomsOnly(
+            chatroom.company_userid_fk,
+            0,
+          );
+          chatroomListWithUserData.push(chatroomWithUserData);
+          return chatroom;
+        }),
+      );
+      return chatroomListWithUserData;
+    }
+  }
+
   /*
    * 1. Check if user already send messages
    * 2. If not, get only chatrooms where user is sender or receiver
@@ -94,15 +190,15 @@ export class MessageService {
    *
    */
 
-  async getMessages(_chartroomid_fk: number) {
+  async getMessages(_chatroomid_fk: number) {
     //get messages from messages where chatroomid_fk = _chartroomid_fk order by message_created_at desc
     return this.MessagesRepo.find({
       select: ['message_id', 'message', 'message_created_at', 'userid_fk'],
       where: {
-        chatroom_id_fk: _chartroomid_fk,
+        chatroomid_fk: _chatroomid_fk,
       },
       order: {
-        message_created_at: 'DESC',
+        message_created_at: 'ASC',
       },
       take: 25,
     });
