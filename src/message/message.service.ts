@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { UserData } from 'src/users/UserData.entity';
-import { Connection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Chatroom } from './chatroom.entity';
 import { Messages } from './messages.entity';
 
@@ -10,7 +10,6 @@ export class MessageService {
   constructor(
     @InjectRepository(Chatroom) private ChatroomRepo: Repository<Chatroom>,
     @InjectRepository(Messages) private MessagesRepo: Repository<Messages>,
-    @InjectConnection() private dbCon: Connection,
     @InjectRepository(UserData) private UserDataRepo: Repository<UserData>,
   ) {}
 
@@ -18,17 +17,9 @@ export class MessageService {
     // check if user got already messages
     // 🛑🛑if true, get messages ordered by message_created_at desc, return chatrooms and messages
     // if false, get chatrooms only
-    const countMessages = await this.MessagesRepo.count({
-      where: {
-        userid_fk: _userid,
-      },
-    });
-    if (countMessages > 0) {
-      return await this.getChatroomsWithLatestMessage(_userid, _type);
-    } else {
-      //get all chatrooms ordered by last message sent
-      return await this.getChatroomsOnly(_userid, _type);
-    }
+
+    //get all chatrooms ordered by last message sent
+    return await this.getChatroomsOnly(_userid, _type);
   }
 
   private async getChatroomsOnly(_userid: number, _type: number) {
@@ -41,6 +32,9 @@ export class MessageService {
         select: ['chatroom_id', 'normal_userid_fk', 'company_userid_fk'],
         where: {
           company_userid_fk: _userid,
+        },
+        order: {
+          created_at: 'DESC',
         },
       });
       //get userdata of connection_userid_fk2
@@ -66,6 +60,9 @@ export class MessageService {
         select: ['chatroom_id', 'normal_userid_fk', 'company_userid_fk'],
         where: {
           normal_userid_fk: _userid,
+        },
+        order: {
+          created_at: 'DESC',
         },
       });
       userDataOfChatrooms = await Promise.all(
@@ -93,6 +90,7 @@ export class MessageService {
     //get lastest message of messages send to user or from user
     //get chatrooms from chatroomid_fk = chatroom_id
     //if user = normal user
+    let chatroomListWithMessages: any[] = [];
     if (_type === 0) {
       const particpatedChatrooms = await this.ChatroomRepo.find({
         select: ['chatroom_id', 'normal_userid_fk', 'company_userid_fk'],
@@ -124,6 +122,7 @@ export class MessageService {
         }),
       );
       //get chatrooms where chatroomid_fk = chatroom_id
+      chatroomListWithMessages.push(...chatroomsWithLatestMessage);
       const chatroomListWithUserData: any = [];
       await Promise.all(
         chatroomsWithLatestMessage.map(async (chatroom) => {
@@ -132,6 +131,7 @@ export class MessageService {
             0,
           );
           chatroomListWithUserData.push(chatroomWithUserData);
+          Logger.log(chatroom);
           return chatroom;
         }),
       );

@@ -9,8 +9,6 @@ require('dotenv').config();
 @Module({
   imports: [
     MailerModule.forRoot({
-      // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
-      // or
       transport: {
         host: `${process.env.REVAX_EMAIL_HOST}`,
         port: Number(process.env.REVAX_EMAIL_PORT),
@@ -25,7 +23,7 @@ require('dotenv').config();
       },
       template: {
         dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+        adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
         },
