@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import * as bycript from 'bcryptjs';
+import { MailService } from 'src/mail/mail.service';
 import { Connection, Repository } from 'typeorm';
+import { ResetPassword } from './reset.entity';
 import { UserData } from './UserData.entity';
 import { UserLogin } from './users.entity';
 
@@ -13,6 +15,9 @@ export class UsersService {
     @InjectConnection() private dbCon: Connection,
     @InjectRepository(UserData) private UserDataRepo: Repository<UserData>,
     @InjectRepository(UserLogin) private UserLoginRepo: Repository<UserLogin>,
+    @InjectRepository(ResetPassword)
+    private ResetRepo: Repository<ResetPassword>,
+    private mailService: MailService,
   ) {}
 
   async createUser(
@@ -72,6 +77,12 @@ export class UsersService {
         userdata.userid_fk,
         userdata.jobcategory,
       ]);
+      await this.mailService.sendUserConfirmation(
+        userdata.userid_fk,
+        usertable.email,
+        usertable.type,
+        usertable.type == 0 ? userdata.firstname : userdata.companyname,
+      );
 
       return { userid: userdata.userid_fk, type: usertable.type };
     } catch (error) {
@@ -112,12 +123,82 @@ export class UsersService {
     }
   }
 
-  async findByUsernameAndPassword(email: string): Promise<UserLogin> {
-    return await this.UserLoginRepository.findOneOrFail({
-      select: ['type', 'email', 'password', 'userid'],
-      where: {
-        email: email,
-      },
-    });
+  async findByUsernameAndPassword(email: string): Promise<UserLogin | any> {
+    try {
+      return await this.UserLoginRepository.findOneOrFail({
+        select: ['type', 'email', 'password', 'userid'],
+        where: {
+          email: email,
+          confirmed: 1,
+        },
+      });
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  async confirmUser(_userid: number): Promise<any> {
+    try {
+      await this.dbCon.query(
+        `UPDATE userlogin SET confirmed = 1 WHERE userid = ?`,
+        [_userid],
+      );
+      return { status: 'Account nun aktiv' };
+    } catch (error) {
+      return {
+        status: `failed`,
+      };
+    }
+  }
+
+  async confirmResetPassword(_resetToken: number): Promise<any> {
+    try {
+      const resetData = await this.ResetRepo.findOneOrFail({
+        select: ['userid_fk', 'password'],
+        where: {
+          reset_id: _resetToken,
+        },
+      });
+      await this.updatePassword(
+        resetData.password,
+        resetData.userid_fk.toString(),
+      );
+      await this.ResetRepo.delete({ reset_id: _resetToken });
+      return { status: 'success' };
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  async resetPassword(_email: string, _password: string): Promise<any> {
+    try {
+      Logger.log('user');
+      const user = await this.UserLoginRepository.findOneOrFail({
+        select: ['userid'],
+        where: {
+          email: _email,
+        },
+      });
+      const resetData = {
+        userid_fk: user.userid,
+        password: _password,
+        email: _email,
+      };
+      Logger.log(resetData);
+      await this.ResetRepo.insert(resetData);
+      const resetId = await this.ResetRepo.findOneOrFail({
+        select: ['reset_id'],
+        where: {
+          userid_fk: user.userid,
+        },
+      });
+      Logger.log('ResetID: ' + user.email);
+      await this.mailService.sendUserResetPassword(resetId.reset_id, _email);
+      return { status: 'success' };
+    } catch (error) {
+      return {
+        status: `failed`,
+      };
+    }
   }
 }

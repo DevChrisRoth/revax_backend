@@ -1,6 +1,11 @@
-import { Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { UserData } from './UserData.entity';
@@ -9,11 +14,7 @@ import { UsersService } from './users.service';
 
 @Controller()
 export class UsersController {
-  constructor(
-    @InjectConnection()
-    private dbCon: Connection,
-    private readonly userService: UsersService,
-  ) {}
+  constructor(private readonly userService: UsersService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login') //✅
@@ -46,6 +47,7 @@ export class UsersController {
         password: req.body['password'],
         //0 = user, 1 = company
         type: req.body['type'] ? req.body['type'] : 0,
+        confirmed: 0,
       };
       return await this.userService.createUser(UserPersonalData, UserLoginData);
     } catch (error) {
@@ -81,6 +83,38 @@ export class UsersController {
       );
     } catch (error) {
       return { status: 'failed' };
+    }
+  }
+
+  @Get('confirm/:token') //✅  (E-Mail link)
+  async confirm(@Param() params): Promise<any> {
+    try {
+      return await this.userService.confirmUser(Number(params.token));
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  //um das zurückzusetzen des Passwort abzuschließen (E-Mail link)
+  @Get('resetpassword/:token') //✅
+  async confirmResetPassword(@Param() params): Promise<any> {
+    try {
+      return await this.userService.confirmResetPassword(Number(params.token));
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  //In-App Request for Password reset
+  @Post('resetpassword') //✅
+  async resetPassword(@Request() req: any): Promise<any> {
+    try {
+      return await this.userService.resetPassword(
+        req.body['email'],
+        req.body['password'],
+      );
+    } catch (error) {
+      return { status: error };
     }
   }
 }

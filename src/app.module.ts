@@ -7,6 +7,7 @@ import { AuthService } from './auth/auth.service';
 import { CompanyController } from './company/company.controller';
 import { CompanyService } from './company/company.service';
 import { Jobcard } from './company/Jobcard.entity';
+import { MailModule } from './mail/mail.module';
 import { Chatroom } from './message/chatroom.entity';
 import { MessageController } from './message/message.controller';
 import { MessageService } from './message/message.service';
@@ -32,6 +33,7 @@ import { UsersModule } from './users/users.module';
       Messages,
       Chatroom,
     ]),
+    MailModule,
   ],
   controllers: [
     AppController,

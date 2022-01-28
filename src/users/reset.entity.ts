@@ -6,23 +6,19 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('userlogin')
-export class UserLogin {
+@Entity('reset_password')
+export class ResetPassword {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
-  userid?: number;
+  reset_id?: number;
 
-  @Column({ length: 150, nullable: false })
-  password: string;
+  @Column({})
+  userid_fk?: number;
 
-  @Column({ length: 50, unique: true })
+  @Column({})
   email: string;
 
-  //0 = user, 1 = company
-  @Column({ default: 0 })
-  type: number;
-
-  @Column({ default: 0 })
-  confirmed: number;
+  @Column({})
+  password: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at?: Date;
