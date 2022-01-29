@@ -4,7 +4,7 @@ import * as bycript from 'bcryptjs';
 import { MailService } from 'src/mail/mail.service';
 import { Connection, Repository } from 'typeorm';
 import { ResetPassword } from './reset.entity';
-import { UserData } from './UserData.entity';
+import { UserData } from './userdata.entity';
 import { UserLogin } from './users.entity';
 
 @Injectable()

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { UserData } from './UserData.entity';
+import { UserData } from './userdata.entity';
 import { UserLogin } from './users.entity';
 import { UsersService } from './users.service';
 

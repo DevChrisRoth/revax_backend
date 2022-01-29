@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserData } from 'src/users/UserData.entity';
+import { UserData } from 'src/users/userdata.entity';
 import { Repository } from 'typeorm';
 import { Chatroom } from './chatroom.entity';
 import { Messages } from './messages.entity';

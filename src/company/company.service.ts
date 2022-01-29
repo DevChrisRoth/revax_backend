@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { Jobcard } from './Jobcard.entity';
+import { Jobcard } from './jobcard.entity';
 @Injectable()
 export class CompanyService {
   constructor(

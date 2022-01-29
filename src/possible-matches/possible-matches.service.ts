@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Jobcard } from 'src/company/Jobcard.entity';
+import { Jobcard } from 'src/company/jobcard.entity';
 import { Chatroom } from 'src/message/chatroom.entity';
 import { UserLogin } from 'src/users/users.entity';
 import { Repository } from 'typeorm';

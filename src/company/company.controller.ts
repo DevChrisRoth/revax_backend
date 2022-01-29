@@ -11,7 +11,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { CompanyService } from './company.service';
-import { Jobcard } from './Jobcard.entity';
+import { Jobcard } from './jobcard.entity';
 @Controller()
 export class CompanyController {
   constructor(

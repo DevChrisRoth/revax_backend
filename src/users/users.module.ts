@@ -3,7 +3,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from 'src/mail/mail.module';
 import { ResetPassword } from './reset.entity';
-import { UserData } from './UserData.entity';
+import { UserData } from './userdata.entity';
 import { UsersController } from './users.controller';
 import { UserLogin } from './users.entity';
 import { UsersService } from './users.service';
