@@ -1,4 +1,4 @@
-import * as bycript from 'bcryptjs';
+import { genSaltSync, hash } from 'bcryptjs';
 import { UserLogin } from 'src/users/users.entity';
 import {
   EntitySubscriberInterface,
@@ -20,16 +20,16 @@ export class UserSubscriber implements EntitySubscriberInterface<UserLogin> {
    * Called before post insertion.
    */
   async beforeInsert(event: InsertEvent<UserLogin>) {
-    const salt = bycript.genSaltSync(12);
-    event.entity.password = await bycript.hash(event.entity.password, salt);
+    const salt = genSaltSync(12);
+    event.entity.password = await hash(event.entity.password, salt);
   }
 
   /**
    * Called before updating.
    **/
   async beforeUpdate(event: UpdateEvent<UserLogin>) {
-    const salt = bycript.genSaltSync(12);
-    event.entity.password = await bycript.hash(event.entity.password, salt);
+    const salt = genSaltSync(12);
+    event.entity.password = await hash(event.entity.password, salt);
     event.entity.hash = salt;
   }
 }

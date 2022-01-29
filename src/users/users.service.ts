@@ -43,7 +43,6 @@ export class UsersService {
       const userdata = {
         firstname: _UserData.firstname,
         lastname: _UserData.lastname,
-        birthday: _UserData.birthday,
         phonenumber: _UserData.phonenumber,
         description: _UserData.description,
         image1: _UserData.image1,
@@ -58,11 +57,10 @@ export class UsersService {
         userid_fk: _UserData.userid_fk[0].userid,
         jobcategory: _UserData.jobcategory,
       };
-      const userdata_sql = `INSERT INTO userdata (firstname, lastname, birthday, phonenumber, description, image1, image2, image3, image4, image5, plz, place, companyname, website, userid_fk, jobcategory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const userdata_sql = `INSERT INTO userdata (firstname, lastname, birthday, phonenumber, description, image1, image2, image3, image4, image5, plz, place, companyname, website, userid_fk, jobcategory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       await this.dbCon.query(userdata_sql, [
         userdata.firstname,
         userdata.lastname,
-        userdata.birthday,
         userdata.phonenumber,
         userdata.description,
         userdata.image1,
