@@ -28,7 +28,6 @@ export class UsersController {
       const UserPersonalData: UserData = {
         firstname: req.body['firstname'],
         lastname: req.body['lastname'],
-        birthday: req.body['birthday'],
         phonenumber: req.body['phonenumber'],
         description: req.body['description'],
         jobcategory: req.body['jobcategory'],

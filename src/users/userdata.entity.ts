@@ -21,9 +21,6 @@ export class UserData {
   lastname: string;
 
   @Column({ length: 50 })
-  birthday: string;
-
-  @Column({ length: 50 })
   phonenumber: string;
 
   @Column({ length: 255 })
