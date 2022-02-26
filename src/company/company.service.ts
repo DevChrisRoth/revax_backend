@@ -18,11 +18,21 @@ export class CompanyService {
     //get jobcategorys of users jobcards
     //iterate over all users, how has the same jobcategory
     //save all userids in an array
+    
+    //holt sich die jobcategorien der jobcards des users
     const jobcategorySelect =
       'SELECT distinct(jobcategory) from jobcard where userid_fk = ?';
     const jobcardCategorys = await this.dbCon.query(jobcategorySelect, [
       _userid,
     ]);
+    //speichert die kategorien in einem array
+    //nimmt sich eine zufällige kategorie
+    //iteriert über alle user, die die kategorie haben
+    //speichert alle userids in einem array
+    //nimmt sich eine zufällige userid
+    //gibt die userdaten und die jobcarddaten zurück
+
+
     const userid_array = [];
     for (let i = 0; i < jobcardCategorys.length; i++) {
       const jobcardCategory = jobcardCategorys[i].jobcategory;
@@ -37,7 +47,7 @@ export class CompanyService {
     let randomNumber: number =
       Math.floor(Math.random() * userid_array.length) + 1;
     const UserData = await this.dbCon.query(
-      `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5, ud.plz, ud.place, ud.website, ul.email, ul.userid from userdata as ud inner join userlogin as ul on ul.userid = ud.userid_fk where ud.userid_fk = ? `,
+      `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5,  ud.website,ud.jobcategory, ul.email, ul.userid from userdata as ud inner join userlogin as ul on ul.userid = ud.userid_fk where ud.userid_fk = ? `,
       [userid_array[randomNumber]],
     );
     Logger.log(randomNumber, UserData[0].userid);
@@ -49,19 +59,22 @@ export class CompanyService {
     const count = await this.JobcardRepository.findAndCount({
       where: { jobcategory: await this.getUsersCategory(_userid) },
     });
+
     //iterate over count[0] and save all jobcardid's in an array
     const jobcardid_array = [];
     for (let i = 0; i < count[1]; i++) {
       jobcardid_array.push(count[0][i].jobcardid);
     }
+
     let randomNumber: number =
       jobcardid_array[Math.floor(Math.random() * jobcardid_array.length)];
     const JobcardData = await this.dbCon.query(
       'select jobcardid, description, jobtitle, userid_fk, jobtype, jobcategory from jobcard where jobcardid = ?',
       [randomNumber],
     );
+
     const UserData = await this.dbCon.query(
-      `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5, ud.plz, ud.place, ud.companyname, ud.website, ul.email, ul.userid from userdata as ud, userlogin as ul where ud.userid_fk = ? and ul.userid = ?`,
+      `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5, ud.companyname, ud.website, ud.jobcategory, ul.email, ul.userid from userdata as ud, userlogin as ul where ud.userid_fk = ? and ul.userid = ?`,
       [JobcardData[0].userid_fk, JobcardData[0].userid_fk],
     );
     if (!JobcardData || !UserData) throw new NotFoundException('No Data found');

@@ -1,10 +1,13 @@
 import {
-  Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
+  Ip,
+  Param,
   Post,
   Request,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
@@ -20,22 +23,39 @@ export class CompanyController {
     private readonly companyService: CompanyService,
   ) {}
 
-  @Get('jobcategorys')
-  async countJobcategory(@Body('keyword') keyword: string): Promise<any> {
-    const queryAllJobcategorys = `SELECT jobcategory, count(jobcategory) as count FROM userdata WHERE jobcategory LIKE ? group by jobcategory`;
-    return await this.dbCon.query(queryAllJobcategorys, ['%' + keyword + '%']);
+  @Get('jobcategorys/:keyword')
+  async countJobcategory(
+    @Param('keyword') keyword: string,
+    @Ip() ip: any,
+  ): Promise<any> {
+    console.log('IP: ' + ip, 'KEYWORD: ' + keyword);
+    if (keyword === 'undefined') {
+      const queryAllJobcategorysWithoutKeyword = `SELECT jobcategory, count(jobcategory) as count FROM userdata where jobcategory is not null GROUP BY jobcategory`;
+      const res = await this.dbCon.query(queryAllJobcategorysWithoutKeyword);
+      console.log({ categories: res });
+      return { categories: res };
+    } else {
+      const queryAllJobcategorys = `SELECT jobcategory, count(jobcategory) as count FROM userdata WHERE jobcategory LIKE ? and jobcategory is not null group by jobcategory`;
+      return await this.dbCon.query(queryAllJobcategorys, [
+        '%' + keyword + '%',
+      ]);
+    }
   }
 
   @UseGuards(AuthenticatedGuard)
   @Get('jobcard') //✅
-  async getRandomCard(@Request() req: any): Promise<any> {
+  async getRandomCard(@Request() req: any, @Response() res: any): Promise<any> {
     try {
-      return await this.companyService.getRandomJobcard(
-        req.user.userid,
-        req.user.type,
-      );
+      return res
+        .status(200)
+        .json(
+          await this.companyService.getRandomJobcard(
+            req.user.userid,
+            req.user.type,
+          ),
+        );
     } catch (error) {
-      return { status: 'failed' };
+      return res.status(500).json({ status: 'failed' });
     }
   }
 
@@ -51,6 +71,7 @@ export class CompanyController {
 
   //set if user is interested in a jobcard or user
   @UseGuards(AuthenticatedGuard)
+  @HttpCode(200)
   @Post('jobcard') //✅
   async createJobcard(@Request() req: any): Promise<any> {
     try {
@@ -58,7 +79,6 @@ export class CompanyController {
         jobtitle: req.body['title'],
         description: req.body['description'],
         jobcategory: req.body['jobcategory'],
-        jobtype: req.body['jobtype'],
         userid_fk: req.user.userid,
       };
       return await this.companyService.createJobcard(jobcard);
@@ -68,10 +88,10 @@ export class CompanyController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete('jobcard') //✅
-  async deleteJobCard(@Request() req: any): Promise<any> {
+  @Delete('jobcard/:id') //✅
+  async deleteJobCard(@Param('id') id: string): Promise<any> {
     try {
-      return await this.companyService.deleteJobCard(req.body['jobcardid']);
+      return await this.companyService.deleteJobCard(Number(id));
     } catch (error) {
       return { status: 'failed' };
     }

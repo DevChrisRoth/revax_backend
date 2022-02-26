@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  HttpCode,
+  Ip,
   Param,
   Post,
   Request,
@@ -17,11 +19,23 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @UseGuards(LocalAuthGuard)
+  @HttpCode(200)
   @Post('login') //✅
-  async login(@Request() req: any): Promise<any> {
+  async login(@Request() req: any, @Ip() ip: any): Promise<any> {
+    console.log('IP: ' + ip);
     return await req.user;
   }
 
+  @UseGuards(AuthenticatedGuard)
+  @HttpCode(200)
+  @Post('logout') //✅
+  async logout(@Request() req: any, @Ip() ip: any): Promise<any> {
+    console.log('IP: ' + ip);
+    req.logout();
+    return { status: 'success' };
+  }
+
+  @HttpCode(200)
   @Post('register') //✅
   async register(@Request() req: any): Promise<any> {
     try {
@@ -36,8 +50,6 @@ export class UsersController {
         image3: req.body['image3'] ? req.body['image3'] : null,
         image4: req.body['image4'] ? req.body['image4'] : null,
         image5: req.body['image5'] ? req.body['image5'] : null,
-        plz: req.body['plz'],
-        place: req.body['place'],
         companyname: req.body['companyname'] ? req.body['companyname'] : null,
         website: req.body['website'] ? req.body['website'] : null,
       };
@@ -55,13 +67,13 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @HttpCode(200)
   @Post('updateprofile') //✅
   async updatePersonalData(@Request() req: any): Promise<any> {
     try {
-      const UserData = {
+      const UserData: UserData = {
         firstname: req.body['firstname'],
         lastname: req.body['lastname'],
-        birthday: req.body['birthday'],
         phonenumber: req.body['phonenumber'],
         description: req.body['description'],
         image1: req.body['image1'] ? req.body['image1'] : null,
@@ -69,8 +81,6 @@ export class UsersController {
         image3: req.body['image3'] ? req.body['image3'] : null,
         image4: req.body['image4'] ? req.body['image4'] : null,
         image5: req.body['image5'] ? req.body['image5'] : null,
-        plz: req.body['plz'],
-        place: req.body['place'],
         companyname: req.body['companyname'] ? req.body['companyname'] : null,
         website: req.body['website'] ? req.body['website'] : null,
       };
@@ -105,6 +115,7 @@ export class UsersController {
   }
 
   //In-App Request for Password reset
+  @HttpCode(200)
   @Post('resetpassword') //✅
   async resetPassword(@Request() req: any): Promise<any> {
     try {

@@ -41,12 +41,6 @@ export class UserData {
   @Column({ type: 'blob', nullable: true })
   image5: string;
 
-  @Column({ length: 50 })
-  plz: string;
-
-  @Column({ length: 50 })
-  place: string;
-
   @Column({ length: 100, nullable: true, default: null })
   jobcategory?: string;
 

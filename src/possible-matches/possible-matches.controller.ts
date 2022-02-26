@@ -1,4 +1,4 @@
-import { Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { PossibleMatchesService } from './possible-matches.service';
 @Controller()
@@ -8,6 +8,7 @@ export class PossibleMatchesController {
   ) {}
   //get a random jobcard or user
   @UseGuards(AuthenticatedGuard)
+  @HttpCode(200)
   @Post('recommendation')
   async getRecommendation(@Request() req: any): Promise<any> {
     try {

@@ -20,10 +20,6 @@ export class Jobcard {
   @Column({ length: 100, nullable: false })
   jobtitle: string;
 
-  //fulltime - parttime - freelance
-  @Column({ length: 100, nullable: false })
-  jobtype: string;
-
   //softwareengineering - webdevelopment - graphicdesign - marketing - HR
   @Column({ length: 100, nullable: false })
   jobcategory: string;

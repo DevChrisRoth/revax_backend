@@ -2,6 +2,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -37,16 +39,17 @@ export class MessageController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get('messages') //✅  (get 50 messages of je chatroom)
-  async getMessages(@Request() req: any): Promise<any> {
+  @Get('messages/:id') //✅  (get 50 messages of je chatroom)
+  async getMessages(@Param('id') chatroomid: any): Promise<any> {
     try {
-      return await this.messageService.getMessages(req.body['chatroomid']);
+      return await this.messageService.getMessages(chatroomid);
     } catch (error) {
       return { status: 'failed' };
     }
   }
 
   @UseGuards(AuthenticatedGuard)
+  @HttpCode(200)
   @Post('messages') //✅ (get 50 messages of je chatroom)
   async sendMessage(@Request() req: any): Promise<any> {
     try {
