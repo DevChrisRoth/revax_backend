@@ -6,18 +6,23 @@ import {
   Param,
   Post,
   Request,
+  Response,
+  StreamableFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { createReadStream } from 'fs';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { UserData } from './userdata.entity';
 import { UserLogin } from './users.entity';
 import { UsersService } from './users.service';
-
 @Controller()
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
-
+  private uploadFolderPath = '../uploads/';
   @UseGuards(LocalAuthGuard)
   @HttpCode(200)
   @Post('login') //✅
@@ -37,7 +42,7 @@ export class UsersController {
 
   @HttpCode(200)
   @Post('register') //✅
-  async register(@Request() req: any): Promise<any> {
+  async register(@Request() req: any, @Response() res: any): Promise<any> {
     try {
       const UserPersonalData: UserData = {
         firstname: req.body['firstname'],
@@ -45,11 +50,21 @@ export class UsersController {
         phonenumber: req.body['phonenumber'],
         description: req.body['description'],
         jobcategory: req.body['jobcategory'],
-        image1: req.body['image1'] ? req.body['image1'] : null,
-        image2: req.body['image2'] ? req.body['image2'] : null,
-        image3: req.body['image3'] ? req.body['image3'] : null,
-        image4: req.body['image4'] ? req.body['image4'] : null,
-        image5: req.body['image5'] ? req.body['image5'] : null,
+        /*filename now */ image1: req.body['image1']
+          ? this.uploadFolderPath + req.body['image1']
+          : null,
+        /*filename now */ image2: req.body['image2']
+          ? this.uploadFolderPath + req.body['image2']
+          : null,
+        /*filename now */ image3: req.body['image3']
+          ? this.uploadFolderPath + req.body['image3']
+          : null,
+        /*filename now */ image4: req.body['image4']
+          ? this.uploadFolderPath + req.body['image4']
+          : null,
+        /*filename now */ image5: req.body['image5']
+          ? this.uploadFolderPath + req.body['image5']
+          : null,
         companyname: req.body['companyname'] ? req.body['companyname'] : null,
         website: req.body['website'] ? req.body['website'] : null,
       };
@@ -60,10 +75,57 @@ export class UsersController {
         type: req.body['type'] ? req.body['type'] : 0,
         confirmed: 0,
       };
-      return await this.userService.createUser(UserPersonalData, UserLoginData);
+      return res
+        .status(200)
+        .json(
+          await this.userService.createUser(UserPersonalData, UserLoginData),
+        );
     } catch (error) {
+      console.log('Register: ' + error);
+      return res.status(500).json({ status: 'failed' });
+    }
+  }
+
+  @Post('upload')
+  @HttpCode(200)
+  @UseInterceptors(
+    FilesInterceptor('images', 5, {
+      dest: '../uploads',
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image')) {
+          cb(null, true);
+        } else {
+          cb(new Error('No supported filetype'), false);
+        }
+      },
+    }),
+  )
+  async uploadFile(
+    @UploadedFiles() images: Array<Express.Multer.File>,
+    @Request() req: any,
+  ): Promise<any> {
+    if (req.headers['authorization'] === process.env.UPLOAD_KEY) {
+      console.log('Uploaded files: ' + images[0]);
+      //store filenames into database where userid = req.user.userid
+      console.log('HeaderValue: ', req.headers['authorization']);
+      return { files: images };
+    } else {
       return { status: 'failed' };
     }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('files/:filename')
+  async serveFile(
+    @Param('filename') file: string,
+    @Response({ passthrough: true }) res,
+  ): Promise<StreamableFile> {
+    const filepath = createReadStream(`../uploads/${file}`);
+    res.set({
+      'Content-Type': 'image/jpg',
+      'Content-Disposition': `attachment; filename=${file}`,
+    });
+    return new StreamableFile(filepath);
   }
 
   @UseGuards(AuthenticatedGuard)

@@ -55,7 +55,8 @@ export class UsersService {
         userid_fk: _UserData.userid_fk[0].userid,
         jobcategory: _UserData.jobcategory,
       };
-      const userdata_sql = `INSERT INTO userdata (firstname, lastname, birthday, phonenumber, description, image1, image2, image3, image4, image5,  companyname, website, userid_fk, jobcategory) VALUES (?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?)`;
+      console.log('userdata: ' + userdata);
+      const userdata_sql = `INSERT INTO userdata (firstname, lastname, phonenumber, description, image1, image2, image3, image4, image5,  companyname, website, userid_fk, jobcategory) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       await this.dbCon.query(userdata_sql, [
         userdata.firstname,
         userdata.lastname,
@@ -71,12 +72,12 @@ export class UsersService {
         userdata.userid_fk,
         userdata.jobcategory,
       ]);
-      await this.mailService.sendUserConfirmation(
-        userdata.userid_fk,
-        usertable.email,
-        usertable.type,
-        usertable.type == 0 ? userdata.firstname : userdata.companyname,
-      );
+      //await this.mailService.sendUserConfirmation(
+      //  userdata.userid_fk,
+      //  usertable.email,
+      //  usertable.type,
+      //  usertable.type == 0 ? _UserData.firstname : _UserData.companyname,
+      //);
 
       return { userid: userdata.userid_fk, type: usertable.type };
     } catch (error) {
@@ -84,6 +85,10 @@ export class UsersService {
         status: 'failed',
       };
     }
+  }
+
+  async serveFile(file: string): Promise<any> {
+    return file;
   }
 
   async updateUser(

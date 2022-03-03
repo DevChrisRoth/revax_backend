@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Jobcard } from './jobcard.entity';
@@ -18,7 +18,7 @@ export class CompanyService {
     //get jobcategorys of users jobcards
     //iterate over all users, how has the same jobcategory
     //save all userids in an array
-    
+
     //holt sich die jobcategorien der jobcards des users
     const jobcategorySelect =
       'SELECT distinct(jobcategory) from jobcard where userid_fk = ?';
@@ -32,9 +32,9 @@ export class CompanyService {
     //nimmt sich eine zufällige userid
     //gibt die userdaten und die jobcarddaten zurück
 
-
     const userid_array = [];
-    for (let i = 0; i < jobcardCategorys.length; i++) {
+    const jobCategorieLength = jobcardCategorys.length;
+    for (let i = 0; i < jobCategorieLength; i++) {
       const jobcardCategory = jobcardCategorys[i].jobcategory;
       const useridSelect = `SELECT userid_fk from userdata where jobcategory = ?`;
       const userids = await this.dbCon.query(useridSelect, [jobcardCategory]);
@@ -42,7 +42,6 @@ export class CompanyService {
         userid_array.push(userids[j].userid_fk);
       }
     }
-    Logger.log(userid_array);
     //get random userid from userid_array
     let randomNumber: number =
       Math.floor(Math.random() * userid_array.length) + 1;
@@ -50,7 +49,7 @@ export class CompanyService {
       `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5,  ud.website,ud.jobcategory, ul.email, ul.userid from userdata as ud inner join userlogin as ul on ul.userid = ud.userid_fk where ud.userid_fk = ? `,
       [userid_array[randomNumber]],
     );
-    Logger.log(randomNumber, UserData[0].userid);
+    //console.log('Image: ' + UserData[0].image1);
     if (!UserData) throw new NotFoundException('No Data found');
     else return { UserData: UserData };
   }

@@ -26,19 +26,19 @@ export class UserData {
   @Column({ length: 255 })
   description: string;
 
-  @Column({ type: 'blob', nullable: true })
+  @Column({ length: 255, nullable: true, default: null })
   image1: string;
 
-  @Column({ type: 'blob', nullable: true })
+  @Column({ length: 255, nullable: true, default: null })
   image2: string;
 
-  @Column({ type: 'blob', nullable: true })
+  @Column({ length: 255, nullable: true, default: null })
   image3: string;
 
-  @Column({ type: 'blob', nullable: true })
+  @Column({ length: 255, nullable: true, default: null })
   image4: string;
 
-  @Column({ type: 'blob', nullable: true })
+  @Column({ length: 255, nullable: true, default: null })
   image5: string;
 
   @Column({ length: 100, nullable: true, default: null })

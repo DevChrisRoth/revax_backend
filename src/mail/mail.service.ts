@@ -13,6 +13,7 @@ export class MailService {
     _name: string,
   ) {
     try {
+      console.log('E-Mail User: ' + _name);
       const url = `${process.env.REVAX_URL}/confirm/${_userid}`;
       await this.mailerService.sendMail({
         to: _email,

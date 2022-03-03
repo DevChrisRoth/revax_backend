@@ -1,8 +1,9 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as session from 'express-session';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 import * as passport from 'passport';
 import { AppModule } from './app.module';
 require('dotenv').config();
@@ -10,6 +11,10 @@ require('dotenv').config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
+  //überarbeiten!!!!
+  //app.use('/register', bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
