@@ -13,8 +13,8 @@ async function bootstrap() {
   app.use(helmet());
   //überarbeiten!!!!
   //app.use('/register', bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+  //app.use(bodyParser.json({ limit: '20mb' }));
+  //app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
   app.use(
     session({
       secret: process.env.SESSION_SECRET,

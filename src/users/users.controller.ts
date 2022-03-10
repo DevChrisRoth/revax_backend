@@ -6,16 +6,17 @@ import {
   Param,
   Post,
   Request,
+  Res,
   Response,
-  StreamableFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { createReadStream } from 'fs';
+import { diskStorage } from 'multer';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { editFileName, imageFileFilter } from './file-upload.utils';
 import { UserData } from './userdata.entity';
 import { UserLogin } from './users.entity';
 import { UsersService } from './users.service';
@@ -86,24 +87,21 @@ export class UsersController {
     }
   }
 
-  @Post('upload')
-  @HttpCode(200)
+  @Post('multiple')
   @UseInterceptors(
-    FilesInterceptor('images', 5, {
-      dest: '../uploads',
-      fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image')) {
-          cb(null, true);
-        } else {
-          cb(new Error('No supported filetype'), false);
-        }
-      },
+    FilesInterceptor('image', 5, {
+      storage: diskStorage({
+        destination: './files',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
     }),
   )
   async uploadFile(
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Request() req: any,
   ): Promise<any> {
+    console.log('Images: ' + images.length);
     if (req.headers['authorization'] === process.env.UPLOAD_KEY) {
       console.log('Uploaded files: ' + images[0]);
       //store filenames into database where userid = req.user.userid
@@ -114,18 +112,9 @@ export class UsersController {
     }
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('files/:filename')
-  async serveFile(
-    @Param('filename') file: string,
-    @Response({ passthrough: true }) res,
-  ): Promise<StreamableFile> {
-    const filepath = createReadStream(`../uploads/${file}`);
-    res.set({
-      'Content-Type': 'image/jpg',
-      'Content-Disposition': `attachment; filename=${file}`,
-    });
-    return new StreamableFile(filepath);
+  @Get('filename/:imgpath')
+  seeUploadedFile(@Param('imgpath') image, @Res() res) {
+    return res.sendFile(image, { root: './files' });
   }
 
   @UseGuards(AuthenticatedGuard)

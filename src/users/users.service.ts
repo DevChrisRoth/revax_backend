@@ -55,7 +55,6 @@ export class UsersService {
         userid_fk: _UserData.userid_fk[0].userid,
         jobcategory: _UserData.jobcategory,
       };
-      console.log('userdata: ' + userdata);
       const userdata_sql = `INSERT INTO userdata (firstname, lastname, phonenumber, description, image1, image2, image3, image4, image5,  companyname, website, userid_fk, jobcategory) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       await this.dbCon.query(userdata_sql, [
         userdata.firstname,
@@ -83,6 +82,26 @@ export class UsersService {
     } catch (error) {
       return {
         status: 'failed',
+      };
+    }
+  }
+  async updateProfileImages(
+    _userid,
+    _filename1,
+    _filename2,
+    _filename3,
+    _filename4,
+    _filename5,
+  ) {
+    try {
+      await this.dbCon.query(
+        `UPDATE userdata SET image1 = ?, image2 = ?, image3 = ?, image4 = ?, image5 = ? WHERE userid = ?`,
+        [_filename1, _filename2, _filename3, _filename4, _filename5, _userid],
+      );
+      return { status: 'success' };
+    } catch (error) {
+      return {
+        status: `failed`,
       };
     }
   }

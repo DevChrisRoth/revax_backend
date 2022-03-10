@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -23,6 +24,9 @@ import { UserLogin } from './users/users.entity';
 import { UsersModule } from './users/users.module';
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './files',
+    }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot(config),
     UsersModule,
