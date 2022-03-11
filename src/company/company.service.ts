@@ -68,7 +68,7 @@ export class CompanyService {
     let randomNumber: number =
       jobcardid_array[Math.floor(Math.random() * jobcardid_array.length)];
     const JobcardData = await this.dbCon.query(
-      'select jobcardid, description, jobtitle, userid_fk, jobtype, jobcategory from jobcard where jobcardid = ?',
+      'select jobcardid, description, jobtitle, userid_fk, jobcategory from jobcard where jobcardid = ?',
       [randomNumber],
     );
 

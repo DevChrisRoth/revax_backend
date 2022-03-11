@@ -20,6 +20,9 @@ export class UsersService {
     private mailService: MailService,
   ) {}
 
+  /**
+   * E-Mail Service needs to be activated
+   */
   async createUser(
     _UserData: UserData,
     UserLoginData: UserLogin,

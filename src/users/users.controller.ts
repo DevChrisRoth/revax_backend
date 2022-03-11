@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -82,7 +83,6 @@ export class UsersController {
           await this.userService.createUser(UserPersonalData, UserLoginData),
         );
     } catch (error) {
-      console.log('Register: ' + error);
       return res.status(500).json({ status: 'failed' });
     }
   }
@@ -100,11 +100,14 @@ export class UsersController {
   async uploadFile(
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Request() req: any,
+    @Body() body: any,
   ): Promise<any> {
-    console.log('Images: ' + images.length);
+    console.log('Images: ' + body['userid']);
     if (req.headers['authorization'] === process.env.UPLOAD_KEY) {
-      console.log('Uploaded files: ' + images[0]);
+      console.log('Uploaded files: ' + images[0].path);
       //store filenames into database where userid = req.user.userid
+
+      //store new filenames in database!!!
       console.log('HeaderValue: ', req.headers['authorization']);
       return { files: images };
     } else {
