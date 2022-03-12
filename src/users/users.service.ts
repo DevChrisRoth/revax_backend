@@ -74,12 +74,12 @@ export class UsersService {
         userdata.userid_fk,
         userdata.jobcategory,
       ]);
-      //await this.mailService.sendUserConfirmation(
-      //  userdata.userid_fk,
-      //  usertable.email,
-      //  usertable.type,
-      //  usertable.type == 0 ? _UserData.firstname : _UserData.companyname,
-      //);
+      await this.mailService.sendUserConfirmation(
+        userdata.userid_fk,
+        usertable.email,
+        usertable.type,
+        usertable.type == 0 ? _UserData.firstname : _UserData.companyname,
+      );
 
       return { userid: userdata.userid_fk, type: usertable.type };
     } catch (error) {
@@ -215,6 +215,26 @@ export class UsersService {
       });
       Logger.log('ResetID: ' + user.email);
       await this.mailService.sendUserResetPassword(resetId.reset_id, _email);
+      return { status: 'success' };
+    } catch (error) {
+      return {
+        status: `failed`,
+      };
+    }
+  }
+  async updateUsersProfileImageFilenames(
+    _filename1: string,
+    _filename2: string,
+    _filename3: string,
+    _filename4: string,
+    _filename5: string,
+    _userid: number,
+  ) {
+    try {
+      await this.dbCon.query(
+        `UPDATE userdata SET image1 = ?, image2 = ?, image3 = ?, image4 = ?, image5 = ? WHERE userid_fk = ?`,
+        [_filename1, _filename2, _filename3, _filename4, _filename5, _userid],
+      );
       return { status: 'success' };
     } catch (error) {
       return {

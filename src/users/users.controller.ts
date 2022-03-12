@@ -14,6 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
 import { diskStorage } from 'multer';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
@@ -102,15 +103,35 @@ export class UsersController {
     @Request() req: any,
     @Body() body: any,
   ): Promise<any> {
-    console.log('Images: ' + body['userid']);
     if (req.headers['authorization'] === process.env.UPLOAD_KEY) {
-      console.log('Uploaded files: ' + images[0].path);
       //store filenames into database where userid = req.user.userid
-
+      const image1Filename = images[0] != undefined ? images[0].filename : null;
+      const image2Filename = images[1] != undefined ? images[1].filename : null;
+      const image3Filename = images[2] != undefined ? images[2].filename : null;
       //store new filenames in database!!!
-      console.log('HeaderValue: ', req.headers['authorization']);
-      return { files: images };
+      images[3] != undefined ? images[3].filename : null;
+      const image4Filename = images[4] != undefined ? images[4].filename : null;
+      const image5Filename = images[5] != undefined ? images[5].filename : null;
+      const userid = body['userid'];
+
+      return await this.userService.updateUsersProfileImageFilenames(
+        image1Filename,
+        image2Filename,
+        image3Filename,
+        image4Filename,
+        image5Filename,
+        userid,
+      );
     } else {
+      images.forEach((image) => {
+        fs.unlink(image.path, (err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('File deleted');
+          }
+        });
+      });
       return { status: 'failed' };
     }
   }
