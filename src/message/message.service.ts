@@ -17,7 +17,7 @@ export class MessageService {
     // check if user got already messages
     // 🛑🛑if true, get messages ordered by message_created_at desc, return chatrooms and messages
     // if false, get chatrooms only
-
+    console.log('userinfo: ', _userid, _type);
     //get all chatrooms ordered by last message sent
     return await this.getChatroomsOnly(_userid, _type);
   }
@@ -29,7 +29,7 @@ export class MessageService {
     let userDataOfChatrooms: any;
     if (_type === 1) {
       chatrooms = await this.ChatroomRepo.find({
-        select: ['chatroom_id', 'normal_userid_fk', 'company_userid_fk'],
+        select: ['chatroom_id', 'normal_userid_fk'],
         where: {
           company_userid_fk: _userid,
         },
@@ -200,7 +200,6 @@ export class MessageService {
       order: {
         message_created_at: 'ASC',
       },
-      take: 25,
     });
   }
 

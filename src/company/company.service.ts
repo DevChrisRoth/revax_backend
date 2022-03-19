@@ -10,33 +10,22 @@ export class CompanyService {
   ) {}
 
   async getRandomJobcard(_userid: number, _type: number): Promise<any> {
+    //check on both, if chatrooms are already created => if so, ignore jobcard or user
     if (_type == 1) return await this.getRandomUser(_userid);
     if (_type == 0) return await this.getRandomCard(_userid);
   }
 
   private async getRandomUser(_userid: number): Promise<any> {
-    //get jobcategorys of users jobcards
-    //iterate over all users, how has the same jobcategory
-    //save all userids in an array
-
-    //holt sich die jobcategorien der jobcards des users
     const jobcategorySelect =
       'SELECT distinct(jobcategory) from jobcard where userid_fk = ?';
     const jobcardCategorys = await this.dbCon.query(jobcategorySelect, [
       _userid,
     ]);
-    //speichert die kategorien in einem array
-    //nimmt sich eine zufällige kategorie
-    //iteriert über alle user, die die kategorie haben
-    //speichert alle userids in einem array
-    //nimmt sich eine zufällige userid
-    //gibt die userdaten und die jobcarddaten zurück
-
     const userid_array = [];
     const jobCategorieLength = jobcardCategorys.length;
     for (let i = 0; i < jobCategorieLength; i++) {
       const jobcardCategory = jobcardCategorys[i].jobcategory;
-      const useridSelect = `SELECT userid_fk from userdata where jobcategory = ?`;
+      const useridSelect = `SELECT ud.userid_fk from userdata as ud, userlogin as ul, chatroom as cr where ud.jobcategory = ? and ul.userid = ud.userid_fk and ul.confirmed = 1 and cr.normal_userid_fk <> ud.userid_fk`;
       const userids = await this.dbCon.query(useridSelect, [jobcardCategory]);
       for (let j = 0; j < userids.length; j++) {
         userid_array.push(userids[j].userid_fk);

@@ -6,7 +6,7 @@ export class PossibleMatchesController {
   constructor(
     private readonly possibleMatchesService: PossibleMatchesService,
   ) {}
-  //get a random jobcard or user
+  //if user accecpted the recommendation
   @UseGuards(AuthenticatedGuard)
   @HttpCode(200)
   @Post('recommendation')
