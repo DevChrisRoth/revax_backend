@@ -3,11 +3,23 @@ require('dotenv').config();
 
 const config: MysqlConnectionOptions = {
   type: 'mysql',
-  host: process.env.DB_HOST,
+  host:
+    process.env.NODE_ENV === 'production'
+      ? process.env.DB_HOSTINGER_HOST
+      : process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  username:
+    process.env.NODE_ENV === 'production'
+      ? process.env.DB_HOSTINGER_USERNAME
+      : process.env.DB_USERNAME,
+  password:
+    process.env.NODE_ENV === 'production'
+      ? process.env.DB_HOSTINGER_PASSWORD
+      : process.env.DB_PASSWORD,
+  database:
+    process.env.NODE_ENV === 'production'
+      ? process.env.DB_HOSTINGER_DATABASE
+      : process.env.DB_DATABASE,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   subscribers: [__dirname + '/**/*.subscriber{.ts,.js}'],
   logging: true,
@@ -16,6 +28,6 @@ const config: MysqlConnectionOptions = {
   dateStrings: true,
   bigNumberStrings: true,
   //debug: true,
-  synchronize: false,
+  synchronize: true,
 };
 export default config;
