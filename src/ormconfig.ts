@@ -28,6 +28,6 @@ const config: MysqlConnectionOptions = {
   dateStrings: true,
   bigNumberStrings: true,
   //debug: true,
-  synchronize: true,
+  synchronize: false,
 };
 export default config;
