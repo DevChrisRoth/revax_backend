@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as compression from 'compression';
-import * as session from 'cookie-session';
+import * as session from 'express-session';
 import helmet from 'helmet';
 import * as passport from 'passport';
 import { AppModule } from './app.module';
