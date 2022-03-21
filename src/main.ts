@@ -32,7 +32,7 @@ async function bootstrap() {
   app.enableCors();
   app.use(compression());
   //app.use(csurf());
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
   Logger.log(`Application listening at ${await app.getUrl()}`);
 }
 bootstrap();
