@@ -5,21 +5,29 @@ import * as session from 'express-session';
 import helmet from 'helmet';
 import * as passport from 'passport';
 import { AppModule } from './app.module';
+
 require('dotenv').config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
-  //überarbeiten!!!!
-  //app.use('/register', bodyParser.json({ limit: '50mb' }));
-  //app.use(bodyParser.json({ limit: '20mb' }));
-  //app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
+  /*app.use(cookieParser());
+  app.use(
+    rateLimit({
+      windowMs: 1 * 60 * 1000,
+      max: 30,
+      message: 'You tried to many requests. Please try again in 1 minute.',
+      standardHeaders: true,
+      skipFailedRequests: true,
+      legacyHeaders: true,
+    }),
+  ); // allows 5 requests per minute*/
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      name: 'remoteSessionId',
+      name: 'revaxSessionId',
       cookie: {
         signed: true,
         httpOnly: true,
@@ -31,7 +39,8 @@ async function bootstrap() {
   app.use(passport.session());
   app.enableCors();
   app.use(compression());
-  //app.use(csurf());
+  //app.use(csurf({ cookie: { sameSite: true } }));
+  //app.startAllMicroservices();
   await app.listen(process.env.PORT || 3000);
   Logger.log(`Application listening at ${await app.getUrl()}`);
 }

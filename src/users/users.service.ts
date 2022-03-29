@@ -113,15 +113,50 @@ export class UsersService {
     return file;
   }
 
-  async updateUser(
-    UserData: any,
-    userid: string,
-    password: string,
-  ): Promise<any> {
+  async getUserdata(_userid: string): Promise<any> {
     try {
-      UserData.userdataid = userid;
-      await this.UserDataRepo.update({ userdataid: userid }, UserData);
-      if (password != null) await this.updatePassword(password, userid);
+      const userdatarepo = await this.UserDataRepo.findOneOrFail({
+        select: [
+          'firstname',
+          'lastname',
+          'phonenumber',
+          'description',
+          'image1',
+          'image2',
+          'image3',
+          'image4',
+          'image5',
+          'companyname',
+          'website',
+          'jobcategory',
+        ],
+        where: {
+          userid_fk: Number(_userid),
+        },
+      });
+      return {
+        firstname: userdatarepo.firstname,
+        lastname: userdatarepo.lastname,
+        phonenumber: userdatarepo.phonenumber,
+        description: userdatarepo.description,
+        image1: userdatarepo.image1,
+        image2: userdatarepo.image2,
+        image3: userdatarepo.image3,
+        image4: userdatarepo.image4,
+        image5: userdatarepo.image5,
+        companyname: userdatarepo.companyname,
+        website: userdatarepo.website,
+        jobcategory: userdatarepo.jobcategory,
+      };
+    } catch (error) {
+      return { status: 'failed' };
+    }
+  }
+
+  async updateUser(_UserData: UserData, _userid: string): Promise<any> {
+    try {
+      _UserData.userid_fk = Number(_userid);
+      await this.UserDataRepo.update({ userid_fk: Number(_userid) }, _UserData);
       return { status: 'success' };
     } catch (error) {
       return {

@@ -102,6 +102,7 @@ export class UsersController {
     @UploadedFiles() images: Array<Express.Multer.File>,
     @Request() req: any,
     @Body() body: any,
+    @Res() res,
   ): Promise<any> {
     if (req.headers['authorization'] === process.env.UPLOAD_KEY) {
       //store filenames into database where userid = req.user.userid
@@ -132,19 +133,22 @@ export class UsersController {
           }
         });
       });
-      return { status: 'failed' };
+      return res.status(500).json({ status: 'failed' });
     }
   }
 
   @Get('filename/:imgpath')
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
-    return res.sendFile(image, { root: './files' });
+    try {
+      return res.sendFile(image, { root: './files' });
+    } catch (error) {
+      return res.status(500).json({ status: 'failed' });
+    }
   }
 
   @UseGuards(AuthenticatedGuard)
-  @HttpCode(200)
   @Post('updateprofile') //✅
-  async updatePersonalData(@Request() req: any): Promise<any> {
+  async updatePersonalData(@Request() req: any, @Res() res): Promise<any> {
     try {
       const UserData: UserData = {
         firstname: req.body['firstname'],
@@ -156,50 +160,60 @@ export class UsersController {
         image3: req.body['image3'] ? req.body['image3'] : null,
         image4: req.body['image4'] ? req.body['image4'] : null,
         image5: req.body['image5'] ? req.body['image5'] : null,
+        jobcategory: req.body['jobcategory'],
         companyname: req.body['companyname'] ? req.body['companyname'] : null,
         website: req.body['website'] ? req.body['website'] : null,
       };
-      const password = req.body['password'] ? req.body['password'] : null;
-      return await this.userService.updateUser(
-        UserData,
-        req.user.userid,
-        password,
-      );
+
+      return res
+        .status(200)
+        .json(await this.userService.updateUser(UserData, req.user.userid));
+    } catch (err) {
+      return res.status(500).json({ status: 'failed' });
+    }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('userdata') //✅
+  async getUserdata(@Request() req: any): Promise<any> {
+    try {
+      console.log('userdata: ' + req.user.userid);
+      return await this.userService.getUserdata(req.user.userid);
     } catch (error) {
       return { status: 'failed' };
     }
   }
 
   @Get('confirm/:token') //✅  (E-Mail link)
-  async confirm(@Param() params): Promise<any> {
+  async confirm(@Param() params, @Res() res): Promise<any> {
     try {
       return await this.userService.confirmUser(Number(params.token));
     } catch (error) {
-      return { status: 'failed' };
+      return res.status(500).json({ status: 'failed' });
     }
   }
 
   //um das zurückzusetzen des Passwort abzuschließen (E-Mail link)
   @Get('resetpassword/:token') //✅
-  async confirmResetPassword(@Param() params): Promise<any> {
+  async confirmResetPassword(@Param() params, @Res() res): Promise<any> {
     try {
       return await this.userService.confirmResetPassword(Number(params.token));
     } catch (error) {
-      return { status: 'failed' };
+      return res.status(500).json({ status: 'failed' });
     }
   }
 
   //In-App Request for Password reset
   @HttpCode(200)
   @Post('resetpassword') //✅
-  async resetPassword(@Request() req: any): Promise<any> {
+  async resetPassword(@Request() req: any, @Res() res): Promise<any> {
     try {
       return await this.userService.resetPassword(
         req.body['email'],
         req.body['password'],
       );
     } catch (error) {
-      return { status: error };
+      return res.status(500).json({ status: 'failed' });
     }
   }
 }
