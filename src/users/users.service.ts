@@ -74,12 +74,12 @@ export class UsersService {
         userdata.userid_fk,
         userdata.jobcategory,
       ]);
-      await this.mailService.sendUserConfirmation(
+      /*await this.mailService.sendUserConfirmation(
         userdata.userid_fk,
         usertable.email,
         usertable.type,
         usertable.type == 0 ? _UserData.firstname : _UserData.companyname,
-      );
+      );*/
 
       return { userid: userdata.userid_fk, type: usertable.type };
     } catch (error) {
@@ -89,16 +89,16 @@ export class UsersService {
     }
   }
   async updateProfileImages(
-    _userid,
-    _filename1,
-    _filename2,
-    _filename3,
-    _filename4,
-    _filename5,
+    _userid: string,
+    _filename1: string | null,
+    _filename2: string | null,
+    _filename3: string | null,
+    _filename4: string | null,
+    _filename5: string | null,
   ) {
     try {
       await this.dbCon.query(
-        `UPDATE userdata SET image1 = ?, image2 = ?, image3 = ?, image4 = ?, image5 = ? WHERE userid = ?`,
+        `UPDATE userdata SET image1 = ?, image2 = ?, image3 = ?, image4 = ?, image5 = ? WHERE userid_fk = ?`,
         [_filename1, _filename2, _filename3, _filename4, _filename5, _userid],
       );
       return { status: 'success' };
@@ -162,6 +162,26 @@ export class UsersService {
       return {
         status: `failed`,
       };
+    }
+  }
+
+  async getImages(_userid: string): Promise<any> {
+    try {
+      const userdatarepo = await this.UserDataRepo.findOneOrFail({
+        select: ['image1', 'image2', 'image3', 'image4', 'image5'],
+        where: {
+          userid_fk: Number(_userid),
+        },
+      });
+      return {
+        image1: userdatarepo.image1,
+        image2: userdatarepo.image2,
+        image3: userdatarepo.image3,
+        image4: userdatarepo.image4,
+        image5: userdatarepo.image5,
+      };
+    } catch (error) {
+      return { status: 'failed' };
     }
   }
 

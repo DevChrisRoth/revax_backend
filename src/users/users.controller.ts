@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   HttpCode,
@@ -9,16 +8,10 @@ import {
   Request,
   Res,
   Response,
-  UploadedFiles,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import * as fs from 'fs';
-import { diskStorage } from 'multer';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { editFileName, imageFileFilter } from './file-upload.utils';
 import { UserData } from './userdata.entity';
 import { UserLogin } from './users.entity';
 import { UsersService } from './users.service';
@@ -88,59 +81,45 @@ export class UsersController {
     }
   }
 
-  @Post('multiple')
-  @UseInterceptors(
-    FilesInterceptor('image', 5, {
-      storage: diskStorage({
-        destination: './files',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async uploadFile(
-    @UploadedFiles() images: Array<Express.Multer.File>,
-    @Request() req: any,
-    @Body() body: any,
-    @Res() res,
-  ): Promise<any> {
-    if (req.headers['authorization'] === process.env.UPLOAD_KEY) {
-      //store filenames into database where userid = req.user.userid
-      const image1Filename = images[0] != undefined ? images[0].filename : null;
-      const image2Filename = images[1] != undefined ? images[1].filename : null;
-      const image3Filename = images[2] != undefined ? images[2].filename : null;
-      //store new filenames in database!!!
-      images[3] != undefined ? images[3].filename : null;
-      const image4Filename = images[4] != undefined ? images[4].filename : null;
-      const image5Filename = images[5] != undefined ? images[5].filename : null;
-      const userid = body['userid'];
-
-      return await this.userService.updateUsersProfileImageFilenames(
-        image1Filename,
-        image2Filename,
-        image3Filename,
-        image4Filename,
-        image5Filename,
-        userid,
-      );
-    } else {
-      images.forEach((image) => {
-        fs.unlink(image.path, (err) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log('File deleted');
-          }
-        });
+  @Post('updateprofileimages') //✅
+  @HttpCode(200)
+  async updateImagePathss(@Request() req, @Response() res): Promise<any> {
+    try {
+      const filename1: string | null = req.body['image1'];
+      const filename2: string | null = req.body['image2'];
+      const filename3: string | null = req.body['image3'];
+      const filename4: string | null = req.body['image4'];
+      const filename5: string | null = req.body['image5'];
+      const userid: string | undefined = req.body['userid'];
+      console.table({
+        filename1,
+        filename2,
+        filename3,
+        filename4,
+        filename5,
       });
+      return res
+        .status(200)
+        .json(
+          this.userService.updateProfileImages(
+            userid,
+            filename1,
+            filename2,
+            filename3,
+            filename4,
+            filename5,
+          ),
+        );
+    } catch (error) {
       return res.status(500).json({ status: 'failed' });
     }
   }
 
-  @Get('filename/:imgpath')
-  seeUploadedFile(@Param('imgpath') image, @Res() res) {
+  @UseGuards(AuthenticatedGuard)
+  @Get('profileimages')
+  seeUploadedFile(@Request() req, @Res() res) {
     try {
-      return res.sendFile(image, { root: './files' });
+      return res.status(200).json(this.userService.getImages(req.user.userid));
     } catch (error) {
       return res.status(500).json({ status: 'failed' });
     }
