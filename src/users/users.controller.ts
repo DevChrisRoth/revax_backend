@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -71,6 +72,13 @@ export class UsersController {
         type: req.body['type'] ? req.body['type'] : 0,
         confirmed: 0,
       };
+      console.log(
+        'User Registered with: ' +
+          UserLoginData.email +
+          ' and ' +
+          UserLoginData.password,
+      );
+
       return res
         .status(200)
         .json(
@@ -83,31 +91,40 @@ export class UsersController {
 
   @Post('updateprofileimages') //✅
   @HttpCode(200)
-  async updateImagePathss(@Request() req, @Response() res): Promise<any> {
+  async updateImagePaths(
+    @Body() userid,
+    @Body() image1: any,
+    @Body() image2,
+    @Body() image3,
+    @Body() image4,
+    @Body() image5,
+    @Response() res,
+  ): Promise<any> {
     try {
-      const filename1: string | null = req.body['image1'];
-      const filename2: string | null = req.body['image2'];
-      const filename3: string | null = req.body['image3'];
-      const filename4: string | null = req.body['image4'];
-      const filename5: string | null = req.body['image5'];
-      const userid: string | undefined = req.body['userid'];
+      console.log('userid: ' + userid.userid);
+      //if isRegister == 0 || false (profilescreen)
+      const _image1Log = image1.image1;
+      const _image2Log = image1.image2;
+      const _image3Log = image1.image3;
+      const _image4Log = image1.image4;
+      const _image5Log = image1.image5;
       console.table({
-        filename1,
-        filename2,
-        filename3,
-        filename4,
-        filename5,
+        _image1Log,
+        _image2Log,
+        _image3Log,
+        _image4Log,
+        _image5Log,
       });
       return res
         .status(200)
         .json(
-          this.userService.updateProfileImages(
-            userid,
-            filename1,
-            filename2,
-            filename3,
-            filename4,
-            filename5,
+          await this.userService.updateProfileImages(
+            userid.userid,
+            image1.image1 != 'undefined' ? image1.image1 : null,
+            image2.image2 != 'undefined' ? image2.image2 : null,
+            image3.image3 != 'undefined' ? image3.image3 : null,
+            image4.image4 != 'undefined' ? image4.image4 : null,
+            image5.image5 != 'undefined' ? image5.image5 : null,
           ),
         );
     } catch (error) {

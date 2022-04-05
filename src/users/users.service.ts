@@ -89,17 +89,33 @@ export class UsersService {
     }
   }
   async updateProfileImages(
-    _userid: string,
-    _filename1: string | null,
-    _filename2: string | null,
-    _filename3: string | null,
-    _filename4: string | null,
-    _filename5: string | null,
-  ) {
+    _userid_fk: string,
+    image1: any,
+    image2: any,
+    image3: any,
+    image4: any,
+    image5: any,
+  ): Promise<any> {
     try {
-      await this.dbCon.query(
-        `UPDATE userdata SET image1 = ?, image2 = ?, image3 = ?, image4 = ?, image5 = ? WHERE userid_fk = ?`,
-        [_filename1, _filename2, _filename3, _filename4, _filename5, _userid],
+      //log values in table console
+      console.table({
+        'On Columns': 'values',
+        userid_fk: _userid_fk,
+        image1: image1,
+        image2: image2,
+        image3: image3,
+        image4: image4,
+        image5: image5,
+      });
+      await this.UserDataRepo.update(
+        { userid_fk: Number(_userid_fk) },
+        {
+          image1: image1,
+          image2: image2,
+          image3: image3,
+          image4: image4,
+          image5: image5,
+        },
       );
       return { status: 'success' };
     } catch (error) {
