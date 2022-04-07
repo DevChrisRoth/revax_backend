@@ -17,11 +17,9 @@ export class MailService {
       const url = `${process.env.REVAX_URL}/confirm/${_userid}`;
       await this.mailerService.sendMail({
         to: _email,
-        //from: `"REVAX" <${process.env.REVAX_EMAIL}> `, // override default from
         subject: `Hi ${_name}!👋 Willkommen in der REVAX-Community!`,
         template: 'confirmation', // `.hbs` extension is appended automatically
         context: {
-          // ✏️ filling curly brackets with content
           name: _name,
           url,
         },
@@ -36,7 +34,6 @@ export class MailService {
       const url = `${process.env.REVAX_URL}/resetpassword/${_resetId}`;
       await this.mailerService.sendMail({
         to: _email,
-        //from: `"REVAX" <${process.env.REVAX_EMAIL}> `, // override default from
         subject: `📢 Dein Account benötigt kurz deine Aufmerksamkeit!`,
         template: 'resetpassword', // `.hbs` extension is appended automatically
         context: {

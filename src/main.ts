@@ -1,6 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
 import * as session from 'express-session';
 import helmet from 'helmet';
 import * as passport from 'passport';
@@ -11,20 +13,20 @@ require('dotenv').config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
-  /*app.use(cookieParser());
+  app.use(cookieParser());
   app.use(
     rateLimit({
       windowMs: 1 * 60 * 1000,
       max: 30,
-      message: 'You tried to many requests. Please try again in 1 minute.',
+      message: 'Du hast zu viele Anfragen, bitte warte einen Moment.',
       standardHeaders: true,
       skipFailedRequests: true,
       legacyHeaders: true,
     }),
-  ); // allows 5 requests per minute*/
+  ); // allows 5 requests per minute
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
+      secret: process.env.REVAX_SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       name: 'revaxSessionId',

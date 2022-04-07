@@ -33,8 +33,12 @@ export class UsersController {
   @Post('logout') //✅
   async logout(@Request() req: any, @Ip() ip: any): Promise<any> {
     console.log('IP: ' + ip);
-    req.logout();
-    return { status: 'success' };
+    try {
+      req.logout();
+      return { status: 'success' };
+    } catch (error) {
+      return { status: 'failed' };
+    }
   }
 
   @HttpCode(200)

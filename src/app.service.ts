@@ -4,8 +4,8 @@ import { Cron } from '@nestjs/schedule';
 export class AppService {
   constructor() {}
 
-  @Cron('0 * 4 * * *')
-  handleCron() {
-    console.log('Cron job executed');
-  }
+  // @Cron('0 * 4 * * *')
+  // handleCron() {
+  //   console.log('Cron job executed');
+  // }
 }
