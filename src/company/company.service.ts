@@ -38,7 +38,6 @@ export class CompanyService {
       `SElECT ud.firstname, ud.lastname, ud.phonenumber, ud.description, ud.image1, ud.image2, ud.image3, ud.image4, ud.image5,  ud.website,ud.jobcategory, ul.email, ul.userid from userdata as ud inner join userlogin as ul on ul.userid = ud.userid_fk where ud.userid_fk = ? `,
       [userid_array[randomNumber]],
     );
-    //console.log('Image: ' + UserData[0].image1);
     if (!UserData) throw new NotFoundException('No Data found');
     else return { UserData: UserData };
   }

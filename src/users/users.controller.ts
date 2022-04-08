@@ -23,16 +23,14 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(200)
   @Post('login') //✅
-  async login(@Request() req: any, @Ip() ip: any): Promise<any> {
-    console.log('IP: ' + ip);
+  async login(@Request() req: any): Promise<any> {
     return await req.user;
   }
 
   @UseGuards(AuthenticatedGuard)
   @HttpCode(200)
   @Post('logout') //✅
-  async logout(@Request() req: any, @Ip() ip: any): Promise<any> {
-    console.log('IP: ' + ip);
+  async logout(@Request() req: any): Promise<any> {
     try {
       req.logout();
       return { status: 'success' };
@@ -76,12 +74,6 @@ export class UsersController {
         type: req.body['type'] ? req.body['type'] : 0,
         confirmed: 0,
       };
-      console.log(
-        'User Registered with: ' +
-          UserLoginData.email +
-          ' and ' +
-          UserLoginData.password,
-      );
 
       return res
         .status(200)
@@ -105,20 +97,7 @@ export class UsersController {
     @Response() res,
   ): Promise<any> {
     try {
-      console.log('userid: ' + userid.userid);
       //if isRegister == 0 || false (profilescreen)
-      const _image1Log = image1.image1;
-      const _image2Log = image1.image2;
-      const _image3Log = image1.image3;
-      const _image4Log = image1.image4;
-      const _image5Log = image1.image5;
-      console.table({
-        _image1Log,
-        _image2Log,
-        _image3Log,
-        _image4Log,
-        _image5Log,
-      });
       return res
         .status(200)
         .json(
@@ -177,7 +156,6 @@ export class UsersController {
   @Get('userdata') //✅
   async getUserdata(@Request() req: any): Promise<any> {
     try {
-      console.log('userdata: ' + req.user.userid);
       return await this.userService.getUserdata(req.user.userid);
     } catch (error) {
       return { status: 'failed' };

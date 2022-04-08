@@ -17,7 +17,6 @@ export class MessageService {
     // check if user got already messages
     // 🛑🛑if true, get messages ordered by message_created_at desc, return chatrooms and messages
     // if false, get chatrooms only
-    console.log('userinfo: ', _userid, _type);
     //get all chatrooms ordered by last message sent
     return await this.getChatroomsOnly(_userid, _type);
   }

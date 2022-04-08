@@ -24,15 +24,10 @@ export class CompanyController {
   ) {}
 
   @Get('jobcategorys/:keyword')
-  async countJobcategory(
-    @Param('keyword') keyword: string,
-    @Ip() ip: any,
-  ): Promise<any> {
-    console.log('IP: ' + ip, 'KEYWORD: ' + keyword);
+  async countJobcategory(@Param('keyword') keyword: string): Promise<any> {
     if (keyword === 'undefined') {
       const queryAllJobcategorysWithoutKeyword = `SELECT jobcategory, count(jobcategory) as count FROM userdata where jobcategory is not null GROUP BY jobcategory`;
       const res = await this.dbCon.query(queryAllJobcategorysWithoutKeyword);
-      console.log({ categories: res });
       return { categories: res };
     } else {
       const queryAllJobcategorys = `SELECT jobcategory, count(jobcategory) as count FROM userdata WHERE jobcategory LIKE ? and jobcategory is not null group by jobcategory`;

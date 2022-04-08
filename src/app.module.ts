@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { AuthService } from './auth/auth.service';
 import { CompanyController } from './company/company.controller';
 import { CompanyService } from './company/company.service';
 import { Jobcard } from './company/jobcard.entity';
+import { LogtailLogger } from './log/LoggerMiddleware';
 import { MailModule } from './mail/mail.module';
 import { Chatroom } from './message/chatroom.entity';
 import { MessageController } from './message/message.controller';
@@ -56,4 +57,8 @@ import { UsersModule } from './users/users.module';
     MessageService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogtailLogger).forRoutes('*');
+  }
+}

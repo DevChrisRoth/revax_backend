@@ -97,16 +97,6 @@ export class UsersService {
     image5: any,
   ): Promise<any> {
     try {
-      //log values in table console
-      console.table({
-        'On Columns': 'values',
-        userid_fk: _userid_fk,
-        image1: image1,
-        image2: image2,
-        image3: image3,
-        image4: image4,
-        image5: image5,
-      });
       await this.UserDataRepo.update(
         { userid_fk: Number(_userid_fk) },
         {

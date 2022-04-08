@@ -1,3 +1,4 @@
+import { Logtail } from '@logtail/node';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 require('dotenv').config();
@@ -5,7 +6,7 @@ require('dotenv').config();
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
-
+  logtail = new Logtail('xxMK2pXiUhkTZdja89E2nGYd');
   async sendUserConfirmation(
     _userid: number,
     _email: string,
@@ -13,7 +14,7 @@ export class MailService {
     _name: string,
   ) {
     try {
-      console.log('E-Mail User: ' + _name);
+      this.logtail.info('Neuer User: ' + _name + ' | Email:' + _email);
       const url = `${process.env.REVAX_URL}/confirm/${_userid}`;
       await this.mailerService.sendMail({
         to: _email,
