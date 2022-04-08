@@ -28,6 +28,6 @@ const config: MysqlConnectionOptions = {
   dateStrings: true,
   bigNumberStrings: true,
   //debug: true,
-  synchronize: process.env.NODE_ENV == 'production' ? true : false,
+  synchronize: false,
 };
 export default config;

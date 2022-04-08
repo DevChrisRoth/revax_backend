@@ -39,6 +39,10 @@ const options = {
     },
   },
 };
+/*
+ * Currently not used, but might be useful in the future.
+ * Problems in Production with DB Connection
+ */
 const sessionStore = new mysqlStore(options);
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
