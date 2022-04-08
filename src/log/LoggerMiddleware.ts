@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class LogtailLogger implements NestMiddleware {
-  logtail = new Logtail('xxMK2pXiUhkTZdja89E2nGYd');
+  logtail = new Logtail(process.env.LOGTAIL_KEY);
 
   public use(request: Request, response: Response, next: NextFunction) {
     const { ip, method, originalUrl } = request;

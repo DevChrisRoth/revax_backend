@@ -6,7 +6,7 @@ require('dotenv').config();
 @Injectable()
 export class MailService {
   constructor(private mailerService: MailerService) {}
-  logtail = new Logtail('xxMK2pXiUhkTZdja89E2nGYd');
+  logtail = new Logtail(process.env.LOGTAIL_KEY);
   async sendUserConfirmation(
     _userid: number,
     _email: string,
