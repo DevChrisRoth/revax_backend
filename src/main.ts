@@ -68,7 +68,7 @@ async function bootstrap() {
         encode: (val) => val,
         secure: process.env.NODE_ENV === 'production' ? true : false,
       },
-      store: sessionStore,
+      //store: sessionStore,
     }),
   );
   app.use(passport.initialize());
