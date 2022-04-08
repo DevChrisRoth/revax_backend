@@ -22,12 +22,12 @@ const config: MysqlConnectionOptions = {
       : process.env.DB_DATABASE,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   subscribers: [__dirname + '/**/*.subscriber{.ts,.js}'],
-  logging: true,
+  logging: process.env.NODE_ENV == 'production' ? false : true,
   //insecureAuth: process.env.NODE_ENV == 'production' ? false : true,
   supportBigNumbers: true,
   dateStrings: true,
   bigNumberStrings: true,
   //debug: true,
-  synchronize: false,
+  synchronize: process.env.NODE_ENV == 'production' ? true : false,
 };
 export default config;
