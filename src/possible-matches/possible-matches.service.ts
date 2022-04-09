@@ -19,7 +19,9 @@ export class PossibleMatchesService {
     _userid: number,
     _cardid: number,
     _usertype: number,
-  ) {
+  ): Promise<{
+    status: string;
+  }> {
     if (_usertype == 0) {
       //function if user click jobcard
       return await this.executeUserAction(_userid, _cardid);
@@ -30,7 +32,12 @@ export class PossibleMatchesService {
     return { status: 'failed' };
   }
 
-  private async executeUserAction(_userid: number, _cardid: number) {
+  private async executeUserAction(
+    _userid: number,
+    _cardid: number,
+  ): Promise<{
+    status: string;
+  }> {
     //_userid = userid who send this request
     //_cardid = id of the card that clicked (jobcard, user)
     //check if userid = userid_of_liked_user in possible_matches
@@ -65,7 +72,12 @@ export class PossibleMatchesService {
     });
     return { status: `success` };
   }
-  private async executeCompanyAction(_userid: number, _cardid: number) {
+  private async executeCompanyAction(
+    _userid: number,
+    _cardid: number,
+  ): Promise<{
+    status: string;
+  }> {
     //_userid = companyid who send this request
     //_cardid = id of user that clicked user
     //check if userid = userid_of_liked_user in possible_matches

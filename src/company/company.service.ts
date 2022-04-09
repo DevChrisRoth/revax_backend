@@ -9,13 +9,20 @@ export class CompanyService {
     @InjectConnection() private dbCon: Connection,
   ) {}
 
-  async getRandomJobcard(_userid: number, _type: number): Promise<any> {
+  async getRandomJobcard(
+    _userid: number,
+    _type: number,
+  ): Promise<{
+    UserData: any;
+  }> {
     //check on both, if chatrooms are already created => if so, ignore jobcard or user
     if (_type == 1) return await this.getRandomUser(_userid);
     if (_type == 0) return await this.getRandomCard(_userid);
   }
 
-  private async getRandomUser(_userid: number): Promise<any> {
+  private async getRandomUser(_userid: number): Promise<{
+    UserData: any;
+  }> {
     const jobcategorySelect =
       'SELECT distinct(jobcategory) from jobcard where userid_fk = ?';
     const jobcardCategorys = await this.dbCon.query(jobcategorySelect, [
@@ -42,7 +49,10 @@ export class CompanyService {
     else return { UserData: UserData };
   }
 
-  private async getRandomCard(_userid: number): Promise<any> {
+  private async getRandomCard(_userid: number): Promise<{
+    JobcardData: any;
+    UserData: any;
+  }> {
     const count = await this.JobcardRepository.findAndCount({
       where: { jobcategory: await this.getUsersCategory(_userid) },
     });
@@ -76,9 +86,11 @@ export class CompanyService {
     return JobcardData[0].jobcategory;
   }
 
-  async createJobcard(JobcardData: Jobcard): Promise<any> {
+  async createJobcard(_JobcardData: Jobcard): Promise<{
+    status: string;
+  }> {
     try {
-      const Jobcard = this.JobcardRepository.create(JobcardData);
+      const Jobcard = this.JobcardRepository.create(_JobcardData);
       await this.JobcardRepository.save(Jobcard);
       return { status: 'success' };
     } catch {
@@ -86,7 +98,12 @@ export class CompanyService {
     }
   }
 
-  async getJobCardList(_userid: number): Promise<any> {
+  async getJobCardList(_userid: number): Promise<
+    | Jobcard[]
+    | {
+        status: string;
+      }
+  > {
     try {
       return await this.JobcardRepository.find({
         where: { userid_fk: _userid },
@@ -96,7 +113,9 @@ export class CompanyService {
     }
   }
 
-  async deleteJobCard(_jobcardid: number): Promise<any> {
+  async deleteJobCard(_jobcardid: number): Promise<{
+    status: string;
+  }> {
     try {
       await this.JobcardRepository.delete(_jobcardid);
       return { status: 'success' };

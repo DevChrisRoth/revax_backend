@@ -3,7 +3,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  Ip,
   Param,
   Post,
   Request,
@@ -56,7 +55,12 @@ export class CompanyController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('jobcardlist')
-  async getJobCardList(@Request() req: any): Promise<any> {
+  async getJobCardList(@Request() req: any): Promise<
+    | Jobcard[]
+    | {
+        status: string;
+      }
+  > {
     try {
       return await this.companyService.getJobCardList(req.user.userid);
     } catch (error) {
@@ -68,7 +72,9 @@ export class CompanyController {
   @UseGuards(AuthenticatedGuard)
   @HttpCode(200)
   @Post('jobcard') //✅
-  async createJobcard(@Request() req: any): Promise<any> {
+  async createJobcard(@Request() req: any): Promise<{
+    status: string;
+  }> {
     try {
       const jobcard: Jobcard = {
         jobtitle: req.body['title'],
@@ -84,7 +90,9 @@ export class CompanyController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete('jobcard/:id') //✅
-  async deleteJobCard(@Param('id') id: string): Promise<any> {
+  async deleteJobCard(@Param('id') id: string): Promise<{
+    status: string;
+  }> {
     try {
       return await this.companyService.deleteJobCard(Number(id));
     } catch (error) {

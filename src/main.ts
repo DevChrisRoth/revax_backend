@@ -9,6 +9,7 @@ import * as passport from 'passport';
 import { AppModule } from './app.module';
 const mysqlStore = require('express-mysql-session')(session);
 
+//please test the return types of promises!!
 require('dotenv').config();
 const options = {
   host:
@@ -79,8 +80,6 @@ async function bootstrap() {
   app.use(passport.session());
   app.enableCors();
   app.use(compression());
-  //app.use(csurf({ cookie: { sameSite: true } }));
-  //app.startAllMicroservices();
   await app.listen(process.env.PORT || 3000);
   Logger.log(`Application listening at ${await app.getUrl()}`);
 }

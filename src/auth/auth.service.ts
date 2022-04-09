@@ -6,10 +6,16 @@ import { UsersService } from 'src/users/users.service';
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findByUsernameAndPassword(email);
+  async validateUser(
+    _email: string,
+    _password: string,
+  ): Promise<{
+    type: any;
+    userid: any;
+  }> {
+    const user = await this.usersService.findByUsernameAndPassword(_email);
     if (user.status === 'failed') return null;
-    if (user && bycript.compareSync(password, user.password)) {
+    if (user && bycript.compareSync(_password, user.password)) {
       const { email, password, ...result } = user;
       return { type: result.type, userid: result.userid };
     }

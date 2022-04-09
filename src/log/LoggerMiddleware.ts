@@ -1,5 +1,5 @@
 import { Logtail } from '@logtail/node';
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class LogtailLogger implements NestMiddleware {
 
   public use(request: Request, response: Response, next: NextFunction) {
     const { ip, method, originalUrl } = request;
-    let reqBody;
+    let reqBody = '';
     const userAgent = request.get('user-agent') || '';
     let oldWrite = response.write,
       oldEnd = response.end;
@@ -50,7 +50,7 @@ export class LogtailLogger implements NestMiddleware {
   private getTimestamp(): string {
     const date = new Date();
     let year = date.getFullYear();
-    let month: string | number = date.getMonth();
+    let month: string | number = date.getMonth() + 1;
     let day: string | number = date.getDate();
     let hours: string | number = date.getHours();
     let minutes: string | number = date.getMinutes();

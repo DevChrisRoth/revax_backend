@@ -10,7 +10,9 @@ export class PossibleMatchesController {
   @UseGuards(AuthenticatedGuard)
   @HttpCode(200)
   @Post('recommendation')
-  async getRecommendation(@Request() req: any): Promise<any> {
+  async postRecommendation(@Request() req: any): Promise<{
+    status: string;
+  }> {
     try {
       if (Number(req.body['recommendation']) == 0) {
         return null;

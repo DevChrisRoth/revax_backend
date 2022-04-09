@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import * as bycript from 'bcryptjs';
 import { MailService } from 'src/mail/mail.service';
@@ -25,13 +25,24 @@ export class UsersService {
    */
   async createUser(
     _UserData: UserData,
-    UserLoginData: UserLogin,
-  ): Promise<any> {
+    _UserLoginData: UserLogin,
+  ): Promise<
+    | {
+        userid: any;
+        type: number;
+        status?: undefined;
+      }
+    | {
+        status: string;
+        userid?: undefined;
+        type?: undefined;
+      }
+  > {
     try {
       const usertable = {
-        email: UserLoginData.email,
-        password: await bycript.hash(UserLoginData.password, 12),
-        type: UserLoginData.type,
+        email: _UserLoginData.email,
+        password: await bycript.hash(_UserLoginData.password, 12),
+        type: _UserLoginData.type,
       };
       const usertable_sql = `INSERT INTO userlogin (email, password, type) VALUES ( ?, ?, ?)`;
       await this.dbCon.query(usertable_sql, [
@@ -90,21 +101,23 @@ export class UsersService {
   }
   async updateProfileImages(
     _userid_fk: string,
-    image1: any,
-    image2: any,
-    image3: any,
-    image4: any,
-    image5: any,
-  ): Promise<any> {
+    _image1: any,
+    _image2: any,
+    _image3: any,
+    _image4: any,
+    _image5: any,
+  ): Promise<{
+    status: string;
+  }> {
     try {
       await this.UserDataRepo.update(
         { userid_fk: Number(_userid_fk) },
         {
-          image1: image1,
-          image2: image2,
-          image3: image3,
-          image4: image4,
-          image5: image5,
+          image1: _image1,
+          image2: _image2,
+          image3: _image3,
+          image4: _image4,
+          image5: _image5,
         },
       );
       return { status: 'success' };
@@ -115,11 +128,24 @@ export class UsersService {
     }
   }
 
-  async serveFile(file: string): Promise<any> {
-    return file;
-  }
-
-  async getUserdata(_userid: string): Promise<any> {
+  async getUserdata(_userid: string): Promise<
+    | {
+        firstname: string;
+        lastname: string;
+        phonenumber: string;
+        description: string;
+        image1: string;
+        image2: string;
+        image3: string;
+        image4: string;
+        image5: string;
+        companyname: string;
+        website: string;
+        jobcategory: string;
+        status?: undefined;
+      }
+    | any
+  > {
     try {
       const userdatarepo = await this.UserDataRepo.findOneOrFail({
         select: [
@@ -159,7 +185,12 @@ export class UsersService {
     }
   }
 
-  async updateUser(_UserData: UserData, _userid: string): Promise<any> {
+  async updateUser(
+    _UserData: UserData,
+    _userid: string,
+  ): Promise<{
+    status: string;
+  }> {
     try {
       _UserData.userid_fk = Number(_userid);
       await this.UserDataRepo.update({ userid_fk: Number(_userid) }, _UserData);
@@ -171,7 +202,24 @@ export class UsersService {
     }
   }
 
-  async getImages(_userid: string): Promise<any> {
+  async getImages(_userid: string): Promise<
+    | {
+        image1: string;
+        image2: string;
+        image3: string;
+        image4: string;
+        image5: string;
+        status?: undefined;
+      }
+    | {
+        status: string;
+        image1?: undefined;
+        image2?: undefined;
+        image3?: undefined;
+        image4?: undefined;
+        image5?: undefined;
+      }
+  > {
     try {
       const userdatarepo = await this.UserDataRepo.findOneOrFail({
         select: ['image1', 'image2', 'image3', 'image4', 'image5'],
@@ -191,11 +239,16 @@ export class UsersService {
     }
   }
 
-  private async updatePassword(password: string, userid: string) {
+  private async updatePassword(
+    _password: string,
+    _userid: string,
+  ): Promise<{
+    status: string;
+  }> {
     try {
       await this.UserLoginRepo.update(
-        { userid: Number(userid) },
-        { password: password },
+        { userid: Number(_userid) },
+        { password: _password },
       );
       return { status: 'success' };
     } catch (error) {
@@ -205,12 +258,12 @@ export class UsersService {
     }
   }
 
-  async findByUsernameAndPassword(email: string): Promise<UserLogin | any> {
+  async findByUsernameAndPassword(_email: string): Promise<UserLogin | any> {
     try {
       return await this.UserLoginRepository.findOneOrFail({
         select: ['type', 'email', 'password', 'userid'],
         where: {
-          email: email,
+          email: _email,
           confirmed: 1,
         },
       });
@@ -219,7 +272,9 @@ export class UsersService {
     }
   }
 
-  async confirmUser(_userid: number): Promise<any> {
+  async confirmUser(_userid: number): Promise<{
+    status: string;
+  }> {
     try {
       await this.dbCon.query(
         `UPDATE userlogin SET confirmed = 1 WHERE userid = ?`,
@@ -233,7 +288,9 @@ export class UsersService {
     }
   }
 
-  async confirmResetPassword(_resetToken: number): Promise<any> {
+  async confirmResetPassword(_resetToken: number): Promise<{
+    status: string;
+  }> {
     try {
       const resetData = await this.ResetRepo.findOneOrFail({
         select: ['userid_fk', 'password'],
@@ -252,9 +309,13 @@ export class UsersService {
     }
   }
 
-  async resetPassword(_email: string, _password: string): Promise<any> {
+  async resetPassword(
+    _email: string,
+    _password: string,
+  ): Promise<{
+    status: string;
+  }> {
     try {
-      Logger.log('user');
       const user = await this.UserLoginRepository.findOneOrFail({
         select: ['userid'],
         where: {
@@ -266,7 +327,6 @@ export class UsersService {
         password: _password,
         email: _email,
       };
-      Logger.log(resetData);
       await this.ResetRepo.insert(resetData);
       const resetId = await this.ResetRepo.findOneOrFail({
         select: ['reset_id'],
@@ -274,7 +334,6 @@ export class UsersService {
           userid_fk: user.userid,
         },
       });
-      Logger.log('ResetID: ' + user.email);
       await this.mailService.sendUserResetPassword(resetId.reset_id, _email);
       return { status: 'success' };
     } catch (error) {
@@ -290,7 +349,9 @@ export class UsersService {
     _filename4: string,
     _filename5: string,
     _userid: number,
-  ) {
+  ): Promise<{
+    status: string;
+  }> {
     try {
       await this.dbCon.query(
         `UPDATE userdata SET image1 = ?, image2 = ?, image3 = ?, image4 = ?, image5 = ? WHERE userid_fk = ?`,

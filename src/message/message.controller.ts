@@ -9,7 +9,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticatedGuard } from '../auth/authenticated.guard';
+import { Chatroom } from './chatroom.entity';
 import { MessageService } from './message.service';
+import { Messages } from './messages.entity';
 
 @Controller()
 export class MessageController {
@@ -17,7 +19,12 @@ export class MessageController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('chatrooms')
-  async getChatrooms(@Request() req: any): Promise<any> {
+  async getChatrooms(@Request() req: any): Promise<
+    | Chatroom[]
+    | {
+        status: string;
+      }
+  > {
     try {
       return await this.messageService.getAllChatroomsOfUser(
         req.user.userid,
@@ -30,7 +37,9 @@ export class MessageController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete('chatrooms') //✅
-  async removeChatrooms(@Request() req: any): Promise<any> {
+  async removeChatrooms(@Request() req: any): Promise<{
+    status: string;
+  }> {
     try {
       return await this.messageService.removeChatroom(req.body['chatroomid']);
     } catch (error) {
@@ -40,7 +49,12 @@ export class MessageController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('messages/:id') //✅  (get 50 messages of je chatroom)
-  async getMessages(@Param('id') chatroomid: any): Promise<any> {
+  async getMessages(@Param('id') chatroomid: any): Promise<
+    | Messages[]
+    | {
+        status: string;
+      }
+  > {
     try {
       return await this.messageService.getMessages(chatroomid);
     } catch (error) {
@@ -51,7 +65,9 @@ export class MessageController {
   @UseGuards(AuthenticatedGuard)
   @HttpCode(200)
   @Post('messages') //✅ (get 50 messages of je chatroom)
-  async sendMessage(@Request() req: any): Promise<any> {
+  async sendMessage(@Request() req: any): Promise<{
+    status: string;
+  }> {
     try {
       return await this.messageService.sendMessage(
         req.user.userid,

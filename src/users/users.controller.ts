@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  Ip,
   Param,
   Post,
   Request,
@@ -30,7 +29,9 @@ export class UsersController {
   @UseGuards(AuthenticatedGuard)
   @HttpCode(200)
   @Post('logout') //✅
-  async logout(@Request() req: any): Promise<any> {
+  async logout(@Request() req: any): Promise<{
+    status: string;
+  }> {
     try {
       req.logout();
       return { status: 'success' };

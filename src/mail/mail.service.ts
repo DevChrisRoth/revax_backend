@@ -1,6 +1,6 @@
 import { Logtail } from '@logtail/node';
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 require('dotenv').config();
 
 @Injectable()
@@ -12,7 +12,9 @@ export class MailService {
     _email: string,
     _type: number,
     _name: string,
-  ) {
+  ): Promise<{
+    status: string;
+  }> {
     try {
       this.logtail.info('Neuer User: ' + _name + ' | Email:' + _email);
       const url = `${process.env.REVAX_URL}/confirm/${_userid}`;
@@ -26,12 +28,16 @@ export class MailService {
         },
       });
     } catch (err) {
-      Logger.log(err);
+      return { status: 'failed' };
     }
   }
-  async sendUserResetPassword(_resetId: number, _email: string) {
+  async sendUserResetPassword(
+    _resetId: number,
+    _email: string,
+  ): Promise<{
+    status: string;
+  }> {
     try {
-      Logger.log('Email: ' + _email);
       const url = `${process.env.REVAX_URL}/resetpassword/${_resetId}`;
       await this.mailerService.sendMail({
         to: _email,
@@ -44,7 +50,7 @@ export class MailService {
         },
       });
     } catch (err) {
-      Logger.log(err);
+      return { status: 'failed' };
     }
   }
 }
