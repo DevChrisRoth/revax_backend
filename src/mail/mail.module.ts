@@ -14,12 +14,12 @@ require('dotenv').config();
         port: Number(process.env.REVAX_EMAIL_HOSTINGER_PORT),
         secure: true,
         auth: {
-          user: `${process.env.REVAX_HOSTINGER_EMAIL}`,
+          user: `${process.env.REVAX_EMAIL_HOSTINGER_EMAIL}`,
           pass: `${process.env.REVAX_EMAIL_HOSTINGER_PASSWORD}`,
         },
       },
       defaults: {
-        from: `"REVAX - Jobs" <${process.env.REVAX_HOSTINGER_EMAIL}> `,
+        from: `"REVAX - Jobs" <${process.env.REVAX_EMAIL_HOSTINGER_EMAIL}> `,
       },
       template: {
         dir: join(__dirname, 'templates'),

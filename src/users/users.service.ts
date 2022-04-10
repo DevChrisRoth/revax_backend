@@ -85,12 +85,14 @@ export class UsersService {
         userdata.userid_fk,
         userdata.jobcategory,
       ]);
-      /*await this.mailService.sendUserConfirmation(
-        userdata.userid_fk,
-        usertable.email,
-        usertable.type,
-        usertable.type == 0 ? _UserData.firstname : _UserData.companyname,
-      );*/
+      if (process.env.NODE_ENV === 'production') {
+        await this.mailService.sendUserConfirmation(
+          userdata.userid_fk,
+          usertable.email,
+          usertable.type,
+          usertable.type == 0 ? _UserData.firstname : _UserData.companyname,
+        );
+      }
 
       return { userid: userdata.userid_fk, type: usertable.type };
     } catch (error) {
