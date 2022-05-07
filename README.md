@@ -1,3 +1,6 @@
+<h1>⛔️ Important - no longer maintained due migration process to Prisma</h1>
+
+<p>Code contains deprecated state and is no longer maintained. This repository is no longer used in production due to potential leaks and security risks.</p>
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
